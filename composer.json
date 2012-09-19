@@ -19,6 +19,6 @@
 		"nette/nette": ">=2.0.0"
 	},
 	"autoload": {
-		"psr-0": { "Nextras": "" }
+		"psr-0": { "Nextras\\Forms": "" }
 	}
 }
