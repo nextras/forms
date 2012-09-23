@@ -18,7 +18,7 @@ use Nette,
 
 
 /**
- * Set of checkboxe controls.
+ * Set of checkbox controls.
  *
  * @author     David Grudl
  * @author     Jan Vlcek
