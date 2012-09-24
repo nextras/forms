@@ -156,6 +156,7 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 			$control->id = $label->for = $id . '-' . $counter;
 			$control->checked = (string) $k === $value;
 			$control->value = $k;
+			unset($control->required);
 			if ($key !== NULL) {
 				return $control;
 			}

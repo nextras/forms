@@ -160,6 +160,7 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 			$control->id = $label->for = $id . '-' . $counter;
 			$control->checked = (count($values) > 0) ? in_array($k, $values) : false;
 			$control->value = $k;
+			unset($control->required);
 			if ($key !== NULL) {
 				return $control;
 			}
@@ -199,19 +200,6 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 			$label->for = NULL;
 			return $label;
 		}
-	}
-
-
-
-	/**
-	 * Filled validator: has been any checkbox checked?
-	 *
-	 * @param IControl $control
-	 * @return bool
-	 */
-	public static function validateChecked(Nette\Forms\IControl $control)
-	{
-		return $control->getValue() !== NULL;
 	}
 
 }
