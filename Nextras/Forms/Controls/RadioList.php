@@ -1,19 +1,19 @@
 <?php
 
 /**
- * This file was part of the Nette Framework (http://nette.org)
+ * This file is part of the Nextras community extensions of Nette Framework
  *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2004 Jan Skrasek (http://jan.skrasek.com)
  *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
+ * @license    MIT
+ * @link       https://github.com/nextras
  */
-
 
 namespace Nextras\Forms\Controls;
 
-use Nette,
-	Nette\Utils\Html;
+use Nette;
+use Nette\Utils\Html;
 
 
 
