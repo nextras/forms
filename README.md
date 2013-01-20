@@ -18,7 +18,7 @@ $ composer require nextras/forms
 
 Initialization in your `bootstrap.php`:
 
-```
+```php
 use Nette\Forms\Container;
 use Nextras\Forms\Controls;
 
