@@ -3,10 +3,9 @@
 /**
  * This file is part of the Nextras community extensions of Nette Framework
  *
- * Copyright (c) 2012 Jan Tvrdik (http://merxes.cz)
- *
  * @license    MIT
  * @link       https://github.com/nextras
+ * @author     Jan Tvrdik (http://merxes.cz)
  */
 
 namespace Nextras\Forms\Controls;
