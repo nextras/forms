@@ -25,17 +25,9 @@ use Nette\Utils\Html;
  * @author     Jan Skrasek
  *
  * @property   array $items
- * @property-read Nette\Utils\Html $separatorPrototype
- * @property-read Nette\Utils\Html $containerPrototype
  */
 class CheckboxList extends Nette\Forms\Controls\BaseControl
 {
-	/** @var Nette\Utils\Html  separator element template */
-	protected $separator;
-
-	/** @var Nette\Utils\Html  container element template */
-	protected $container;
-
 	/** @var array */
 	protected $items = array();
 
@@ -49,8 +41,6 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 	{
 		parent::__construct($label);
 		$this->control->type = 'checkbox';
-		$this->container = Html::el();
-		$this->separator = Html::el();
 		if ($items !== NULL) {
 			$this->setItems($items);
 		}
@@ -108,28 +98,6 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 
 
 	/**
-	 * Returns separator HTML element template.
-	 * @return Nette\Utils\Html
-	 */
-	final public function getSeparatorPrototype()
-	{
-		return $this->separator;
-	}
-
-
-
-	/**
-	 * Returns container HTML element template.
-	 * @return Nette\Utils\Html
-	 */
-	final public function getContainerPrototype()
-	{
-		return $this->container;
-	}
-
-
-
-	/**
 	 * Generates control's HTML element.
 	 *
 	 * @param mixed $key  Specify a key if you want to render just a single checkbox
@@ -138,8 +106,7 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 	public function getControl($key = NULL)
 	{
 		if ($key === NULL) {
-			$container = clone $this->container;
-			$separator = (string) $this->separator;
+			$container = Html::el();
 
 		} elseif (!isset($this->items[$key])) {
 			return NULL;
@@ -180,7 +147,7 @@ class CheckboxList extends Nette\Forms\Controls\BaseControl
 			$label->class[] = 'checkbox';
 			$label->add($control);
 			$label->add($val instanceof Nette\Utils\Html ? $val : $this->translate($val));
-			$container->add((string) $label . $separator);
+			$container->add((string) $label);
 		}
 
 		return $container;
