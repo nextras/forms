@@ -116,8 +116,11 @@ class OptionList extends Nette\Forms\Controls\BaseControl
 		foreach ($this->items as $key => $val) {
 			$label = $this->getLabelItem($key);
 
-			$label->class[] = 'radio';
+			$label->class[] = $this->control->type;
+			$text = $label->getText();
+			$label->setText('');
 			$label->add($this->getControlItem($key));
+			$label->add($text);
 
 			$container->add((string) $label);
 		}
