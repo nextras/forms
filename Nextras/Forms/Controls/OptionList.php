@@ -23,7 +23,7 @@ use Nette\Utils\Html;
  *
  * @property   array $items
  */
-class OptionList extends Nette\Forms\Controls\BaseControl
+class OptionList extends Nette\Forms\Controls\BaseControl implements IListControl
 {
 	/** @var array */
 	protected $items = array();
