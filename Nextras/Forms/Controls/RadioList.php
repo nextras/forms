@@ -19,7 +19,6 @@ use Nette\Utils\Html;
 /**
  * Set of radio button controls.
  *
- * @author     David Grudl
  * @author     Jan Skrasek
  *
  * @property   array $items
@@ -28,6 +27,9 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 {
 	/** @var array */
 	protected $items = array();
+
+	/** @var IControl */
+	protected $inputPrototype;
 
 
 
@@ -47,13 +49,23 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 
 
 	/**
+	 * @inheritDoc
+	 */
+	public function setValue($value)
+	{
+		$this->value = is_scalar($value) && isset($this->items[$value]) ? $value : NULL;
+		return $this;
+	}
+
+
+
+	/**
 	 * Returns selected radio value.
-	 * @param  bool
 	 * @return mixed
 	 */
-	public function getValue($raw = FALSE)
+	public function getValue()
 	{
-		return is_scalar($this->value) && ($raw || isset($this->items[$this->value])) ? $this->value : NULL;
+		return $this->value;
 	}
 
 
@@ -86,7 +98,7 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 	 * Returns options from which to choose.
 	 * @return array
 	 */
-	final public function getItems()
+	public function getItems()
 	{
 		return $this->items;
 	}
@@ -96,56 +108,31 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 	/**
 	 * Generates control's HTML element.
 	 *
-	 * @param mixed $key  Specify a key if you want to render just a single checkbox
 	 * @return Nette\Utils\Html
 	 */
-	public function getControl($key = NULL)
+	public function getControl()
 	{
-		if ($key === NULL) {
-			$container = Html::el();
-
-		} elseif (!isset($this->items[$key])) {
-			return NULL;
-		}
-
-		$control = parent::getControl();
-
-		$rules = iterator_to_array($this->rules);
-		foreach ($rules as $i => $rule) {
-			if ($rule->operation === Nette\Forms\Form::FILLED)
-				unset($rules[$i]);
-		}
-		$rules = self::exportRules($rules);
-		$rules = substr(PHP_VERSION_ID >= 50400 ? json_encode($rules, JSON_UNESCAPED_UNICODE) : json_encode($rules), 1, -1);
-		$rules = preg_replace('#"([a-z0-9_]+)":#i', '$1:', $rules);
-		$rules = preg_replace('#(?<!\\\\)"(?!:[^a-z])([^\\\\\',]*)"#i', "'$1'", $rules);
-		$control->data('nette-rules', $rules ? $rules : NULL);
-
-		$id = $control->id;
-		$counter = -1;
-		$value = $this->value === NULL ? NULL : (string) $this->getValue();
-
-		foreach ($this->items as $k => $val) {
-			$counter++;
-			if ($key !== NULL && $key != $k) continue; // intentionally ==
-
-			$label = Nette\Utils\Html::el('label');
-
-			$control->id = $label->for = $id . '-' . $counter;
-			$control->checked = (string) $k === $value;
-			$control->value = $k;
-			unset($control->required);
-			if ($key !== NULL) {
-				return $control;
-			}
+		$container = Html::el();
+		foreach ($this->items as $key => $val) {
+			$label = $this->getLabelItem($key);
 
 			$label->class[] = 'radio';
-			$label->add($control);
-			$label->add($val instanceof Nette\Utils\Html ? $val : $this->translate($val));
+			$label->add($this->getControlItem($key));
+
 			$container->add((string) $label);
 		}
-
 		return $container;
+	}
+
+
+
+	public function getControlItem($key)
+	{
+		$control = clone $this->getInputPrototype();
+		$control->id .= '-' . $key;
+		$control->checked = (string) $key === $this->getValue();
+		$control->value = $key;
+		return $control;
 	}
 
 
@@ -155,26 +142,32 @@ class RadioList extends Nette\Forms\Controls\BaseControl
 	 * @param  string
 	 * @return void
 	 */
-	public function getLabel($key = NULL, $caption = NULL)
+	public function getLabel($caption = NULL)
+	{
+		$label = parent::getLabel($caption);
+		$label->for = NULL;
+		return $label;
+	}
+
+
+
+	public function getLabelItem($key, $caption = NULL)
 	{
 		$label = parent::getLabel();
-		if ($key !== NULL) {
-			$label = clone $label;
-			$label->setText($this->items[$key]);
-			$counter = -1;
-			foreach ($this->items as $k => $val) {
-				$counter++;
-				if ($key != $k) continue; // intentionally ==
-				break;
-			}
-			$label->for .= '-' . $counter;
-			return $label;
-		} else {
-			$label = parent::getLabel($caption);
-			$label->for = NULL;
-			return $label;
+		$label->setText($caption ?: $this->translate($this->items[$key]));
+		$label->for .= '-' . $key;
+		return $label;
+	}
+
+
+
+	protected function getInputPrototype()
+	{
+		if ($this->inputPrototype) {
+			return $this->inputPrototype;
 		}
 
+		return $this->inputPrototype = parent::getControl();
 	}
 
 }
