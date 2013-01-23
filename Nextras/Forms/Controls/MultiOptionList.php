@@ -35,7 +35,6 @@ class MultiOptionList extends OptionList
 
 	public function setValue($values)
 	{
-		dump($values);
 		$this->value = array();
 		foreach ($values as $value) {
 			if (isset($this->items[$value])) {
