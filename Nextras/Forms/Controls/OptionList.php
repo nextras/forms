@@ -17,13 +17,13 @@ use Nette\Utils\Html;
 
 
 /**
- * Set of radio button controls.
+ * Set of options.
  *
  * @author     Jan Skrasek
  *
  * @property   array $items
  */
-class RadioList extends Nette\Forms\Controls\BaseControl
+class OptionList extends Nette\Forms\Controls\BaseControl
 {
 	/** @var array */
 	protected $items = array();
