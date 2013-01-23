@@ -170,7 +170,14 @@ class OptionList extends Nette\Forms\Controls\BaseControl
 			return $this->inputPrototype;
 		}
 
-		return $this->inputPrototype = parent::getControl();
+		return $this->inputPrototype = $this->createInputPrototype();
+	}
+
+
+
+	protected function createInputPrototype()
+	{
+		return parent::getControl();
 	}
 
 }
