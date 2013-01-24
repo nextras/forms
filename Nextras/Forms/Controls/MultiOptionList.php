@@ -18,7 +18,7 @@ use Nette\Forms\IControl;
 
 
 /**
- * Set of checkbox controls.
+ * Set of checkbox options.
  *
  * @author     Jan Skrasek
  *

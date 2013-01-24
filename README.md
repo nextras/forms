@@ -1,10 +1,10 @@
 ## Nextras\Forms
 
 List of components:
+- **OptionList** - option control rendered as radio list
+- **MultiOptionList** - multiple option control rendered as checkbox list
 - **DatePicker** - date picker, represented by DateTime object
 - **DateTimePicker** - date & time picker, represented by DateTime object
-- **CheckboxList** - multiple option control rendered as checkbox list 
-- **RadioList** - enhanced Nette Framework control for better rendering
 
 ## Installation
 
@@ -19,14 +19,17 @@ $ composer require nextras/forms
 Initialization in your `bootstrap.php`:
 
 ```php
+use Nette\Forms\Rules;
 use Nette\Forms\Container;
 use Nextras\Forms\Controls;
 
-Container::extensionMethod('addCheckboxList', function (Container $container, $name, $label = NULL, array $items = NULL) {
-	return $container[$name] = new Controls\CheckboxList($label, $items);
+Rules::$defaultMessages[':listFilled'] = 'Please check some option.';
+
+Container::extensionMethod('addOptionList', function (Container $container, $name, $label = NULL, array $items = NULL) {
+	return $container[$name] = new Controls\OptionList($label, $items);
 });
-Container::extensionMethod('addRadioList', function (Container $container, $name, $label = NULL, array $items = NULL) {
-	return $container[$name] = new Controls\RadioList($label, $items);
+Container::extensionMethod('addMultiOptionList', function (Container $container, $name, $label = NULL, array $items = NULL) {
+	return $container[$name] = new Controls\MultiOptionList($label, $items);
 });
 Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
 	return $container[$name] = new Controls\DatePicker($label);

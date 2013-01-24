@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras
- * @author     David Grudl (http://davidgrudl.com)
  * @author     Jan Skrasek
  */
 
@@ -17,7 +16,7 @@ use Nette\Utils\Html;
 
 
 /**
- * Set of options.
+ * Set of radion options.
  *
  * @author     Jan Skrasek
  *
