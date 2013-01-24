@@ -19,11 +19,8 @@ $ composer require nextras/forms
 Initialization in your `bootstrap.php`:
 
 ```php
-use Nette\Forms\Rules;
 use Nette\Forms\Container;
 use Nextras\Forms\Controls;
-
-Rules::$defaultMessages[':listFilled'] = 'Please check some option.';
 
 Container::extensionMethod('addOptionList', function (Container $container, $name, $label = NULL, array $items = NULL) {
 	return $container[$name] = new Controls\OptionList($label, $items);
