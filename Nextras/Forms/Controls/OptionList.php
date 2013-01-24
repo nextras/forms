@@ -52,7 +52,7 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements IListContro
 	 */
 	public function setValue($value)
 	{
-		$this->value = is_scalar($value) && isset($this->items[$value]) ? $value : NULL;
+		$this->value = is_scalar($value) && isset($this->items[$value]) ? (string) $value : NULL;
 		return $this;
 	}
 
