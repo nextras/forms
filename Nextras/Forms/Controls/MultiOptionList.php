@@ -47,7 +47,7 @@ class MultiOptionList extends OptionList
 		$this->value = array();
 		foreach ((array) $values as $value) {
 			if (isset($this->items[$value])) {
-				$this->value[] = $value;
+				$this->value[] = (string) $value;
 			}
 		}
 		return $this;
@@ -72,6 +72,17 @@ class MultiOptionList extends OptionList
 	public function addCondition($operation, $value = NULL)
 	{
 		return parent::addCondition($operation === Form::FILLED ? static::FILLED : $operation, $value);
+	}
+
+
+
+	public function getControlItem($key)
+	{
+		$control = clone $this->getInputPrototype();
+		$control->id .= '-' . $key;
+		$control->checked = in_array((string) $key, $this->getValue(), TRUE);
+		$control->value = $key;
+		return $control;
 	}
 
 
