@@ -22,7 +22,7 @@ use Nette\Utils\Html;
  *
  * @property   array $items
  */
-class OptionList extends Nette\Forms\Controls\BaseControl implements IListControl
+class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAggregate, IListControl
 {
 	/** @var array */
 	protected $items = array();
@@ -100,6 +100,13 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements IListContro
 	public function getItems()
 	{
 		return $this->items;
+	}
+
+
+
+	public function getIterator()
+	{
+		return new \ArrayIterator($this->items);
 	}
 
 

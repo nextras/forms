@@ -14,7 +14,7 @@ use Nette\Forms\IControl;
 
 
 
-interface IListControl extends IControl
+interface IListControl extends IControl, \Traversable
 {
 
 	function getControlItem($key);
