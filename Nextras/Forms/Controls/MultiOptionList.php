@@ -14,6 +14,7 @@ use Nette;
 use Nette\Utils\Html;
 use Nette\Forms\Form;
 use Nette\Forms\IControl;
+use Nette\Utils\Validators;
 
 
 
@@ -26,9 +27,6 @@ use Nette\Forms\IControl;
  */
 class MultiOptionList extends OptionList
 {
-	/** validator */
-	const FILLED = ':listFilled';
-
 	/** @var array */
 	protected $value = array();
 
@@ -62,20 +60,6 @@ class MultiOptionList extends OptionList
 
 
 
-	public function addRule($operation, $message = NULL, $arg = NULL)
-	{
-		return parent::addRule($operation === Form::FILLED ? static::FILLED : $operation, $message, $arg);
-	}
-
-
-
-	public function addCondition($operation, $value = NULL)
-	{
-		return parent::addCondition($operation === Form::FILLED ? static::FILLED : $operation, $value);
-	}
-
-
-
 	public function getControlItem($key)
 	{
 		$control = clone $this->getInputPrototype();
@@ -91,6 +75,7 @@ class MultiOptionList extends OptionList
 	{
 		$control = parent::createInputPrototype();
 		$control->name .= '[]';
+		unset($control->required);
 		return $control;
 	}
 
@@ -100,9 +85,27 @@ class MultiOptionList extends OptionList
 
 
 
-	public static function validateListFilled(IControl $control)
+	public static function validateMinLength(IControl $control, $length)
 	{
-		return $control->isFilled();
+		return count($control->getValue()) >= $length;
+	}
+
+
+
+	public static function validateMaxLength(IControl $control, $length)
+	{
+		return count($control->getValue()) <= $length;
+	}
+
+
+
+	public static function validateLength(IControl $control, $range)
+	{
+		if (!is_array($range)) {
+			$range = array($range, $range);
+		}
+
+		return Validators::isInRange(count($control->getValue()), $range);
 	}
 
 }
