@@ -19,11 +19,8 @@ use DateTime;
 /**
  * Form control for selecting date.
  *
- *  – compatible with jQuery UI DatePicker and HTML 5
- *  – works with DateTime
- *
  * @author   Jan Tvrdik
- * @version  2.3
+ * @author   Jan Skrasek
  */
 class DatePicker extends Forms\Controls\BaseControl
 {
@@ -33,18 +30,11 @@ class DatePicker extends Forms\Controls\BaseControl
 	/** @var DateTime|NULL internal date reprezentation */
 	protected $value;
 
-	/** @var string value entered by user (unfiltered) */
-	protected $rawValue;
-
-	/** @var string class name */
-	private $className = 'date';
-
 
 
 	/**
 	 * Class constructor.
 	 *
-	 * @author Jan Tvrdik
 	 * @param  string
 	 */
 	public function __construct($label = NULL)
@@ -56,43 +46,15 @@ class DatePicker extends Forms\Controls\BaseControl
 
 
 	/**
-	 * Returns class name.
-	 *
-	 * @author Jan Tvrdik
-	 * @return string
-	 */
-	public function getClassName()
-	{
-		return $this->className;
-	}
-
-
-
-	/**
-	 * Sets class name for input element.
-	 *
-	 * @author Jan Tvrdik
-	 * @param  string
-	 * @return self
-	 */
-	public function setClassName($className)
-	{
-		$this->className = $className;
-		return $this;
-	}
-
-
-
-	/**
 	 * Generates control's HTML element.
 	 *
-	 * @author Jan Tvrdik
 	 * @return Nette\Utils\Html
 	 */
 	public function getControl()
 	{
 		$control = parent::getControl();
-		$control->addClass($this->className);
+		$control->addClass($control->type);
+		unset($control->data['nette-rules']);
 		list($min, $max) = $this->extractRangeRule($this->getRules());
 		if ($min !== NULL) {
 			$control->min = $min->format(self::W3C_DATE_FORMAT);
@@ -111,7 +73,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	/**
 	 * Sets DatePicker value.
 	 *
-	 * @author Jan Tvrdik
 	 * @param  DateTime|int|string
 	 * @return self
 	 */
@@ -122,12 +83,9 @@ class DatePicker extends Forms\Controls\BaseControl
 		} elseif (is_int($value)) { // timestamp
 
 		} elseif (empty($value)) {
-			$rawValue = $value;
 			$value = NULL;
 
 		} elseif (is_string($value)) {
-			$rawValue = $value;
-
 			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})([. -] *(?P<yyyy>\d{4})?)?$#', $value, $matches)) {
 				$dd = $matches['dd'];
 				$mm = $matches['mm'];
@@ -139,14 +97,13 @@ class DatePicker extends Forms\Controls\BaseControl
 					$value = NULL;
 				}
 			}
-
 		} else {
 			throw new \InvalidArgumentException();
 		}
 
 		if ($value !== NULL) {
-			// DateTime constructor throws Exception when invalid input given
 			try {
+				// DateTime constructor throws Exception when invalid input given
 				$value = Nette\DateTime::from($value); // clone DateTime when given
 				$value->setTime(0, 0, 0); // unify user input to day start
 			} catch (\Exception $e) {
@@ -154,63 +111,20 @@ class DatePicker extends Forms\Controls\BaseControl
 			}
 		}
 
-		if (!isset($rawValue) && isset($value)) {
-			$rawValue = $value->format(self::W3C_DATE_FORMAT);
-		}
-
 		$this->value = $value;
-		$this->rawValue = $rawValue;
-
 		return $this;
 	}
 
 
 
 	/**
-	 * Returns unfiltered value.
+	 * Does user enter anything?
 	 *
-	 * @author Jan Tvrdik
-	 * @return string
-	 */
-	public function getRawValue()
-	{
-		return $this->rawValue;
-	}
-
-
-
-	/**
-	 * Does user enter anything? (the value doesn't have to be valid)
-	 *
-	 * @author Jan Tvrdik
-	 * @param  DatePicker
 	 * @return bool
 	 */
 	public static function validateFilled(Forms\IControl $control)
 	{
-		if (!$control instanceof self) {
-			throw new Nette\InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
-		}
-		$rawValue = $control->rawValue;
-		return !empty($rawValue);
-	}
-
-
-
-	/**
-	 * Is entered value valid? (empty value is also valid!)
-	 *
-	 * @author Jan Tvrdik
-	 * @param  DatePicker
-	 * @return bool
-	 */
-	public static function validateValid(Forms\IControl $control)
-	{
-		if (!$control instanceof self) {
-			throw new Nette\InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
-		}
-		$value = $control->value;
-		return empty($control->rawValue) || $value instanceof DateTime;
+		return $control->getValue() !== NULL;
 	}
 
 
@@ -218,10 +132,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	/**
 	 * Is entered values within allowed range?
 	 *
-	 * @author Jan Tvrdik
-	 * @author David Grudl
-	 * @param  DatePicker
-	 * @param  array 0 => minDate, 1 => maxDate
 	 * @return bool
 	 */
 	public static function validateRange(Forms\IControl $control, $range)
@@ -234,8 +144,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	/**
 	 * Finds minimum and maximum allowed dates.
 	 *
-	 * @author Jan Tvrdik
-	 * @param  Forms\Rules
 	 * @return array 0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
 	 */
 	protected function extractRangeRule(Forms\Rules $rules)
