@@ -148,6 +148,7 @@ class DatePicker extends Forms\Controls\BaseControl
 			// DateTime constructor throws Exception when invalid input given
 			try {
 				$value = Nette\DateTime::from($value); // clone DateTime when given
+				$value->setTime(0, 0, 0); // unify user input to day start
 			} catch (\Exception $e) {
 				$value = NULL;
 			}
