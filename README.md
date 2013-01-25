@@ -14,6 +14,9 @@ The best way to install is using [Composer](http://getcomposer.org/):
 $ composer require nextras/forms
 ```
 
+For Date(Time)Picker we recommend use [DateTime Picker](http://www.malot.fr/bootstrap-datetimepicker/) for Bootstrap.
+See JS init script.
+
 ## Documentation
 
 Initialization in your `bootstrap.php`:
