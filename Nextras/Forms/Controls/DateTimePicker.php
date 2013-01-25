@@ -38,7 +38,6 @@ class DateTimePicker extends DatePicker
 	{
 		parent::__construct($label);
 		$this->control->type = 'datetime-local';
-		$this->setClassName('datetime');
 	}
 
 
@@ -76,41 +75,43 @@ class DateTimePicker extends DatePicker
 	 */
 	public function setValue($value)
 	{
-		if (!is_string($value)) {
-			return parent::setValue($value);
-		}
+		if ($value instanceof DateTime) {
 
-		if (preg_match($value, '#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ \-@] *(?P<hh>\d{1,2}):(?P<ii>\d{1,2}))?$#', $matches)) {
-			$dd = $matches['dd'];
-			$mm = $matches['mm'];
-			$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
+		} elseif (is_int($value)) { // timestamp
 
-			$hh = isset($matches['hh']) ? $matches['hh'] : 0;
-			$ii = isset($matches['ii']) ? $matches['ii'] : 0;
+		} elseif (empty($value)) {
+			$value = NULL;
 
-			if (!($hh > -1 && $hh < 24 && $ii > -1 && $ii < 60)) {
-				$hh = $ii = 0;
-			}
+		} elseif (is_string($value)) {
+			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ -@] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2}))?$#', $value, $matches)) {
+				$dd = $matches['dd'];
+				$mm = $matches['mm'];
+				$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
 
-			if (checkdate($mm, $dd, $yyyy)) {
-				$value = date(self::W3C_DATETIME_FORMAT, mktime($hh, $ii, 0, $mm, $dd, $yyyy));
-			} else {
-				$value = NULL;
+				$hh = isset($matches['hh']) ? $matches['hh'] : 0;
+				$ii = isset($matches['ii']) ? $matches['ii'] : 0;
+
+				if (!($hh >= 0 && $hh < 24 && $ii >= 0 && $ii < 60)) {
+					$hh = $ii = 0;
+				}
+
+				if (checkdate($mm, $dd, $yyyy)) {
+					$value = date(self::W3C_DATETIME_FORMAT, mktime($hh, $ii, 0, $mm, $dd, $yyyy));
+				} else {
+					$value = NULL;
+				}
 			}
 		} else {
-			$value = NULL;
+			throw new \InvalidArgumentException();
 		}
 
 		if ($value !== NULL) {
 			try {
+				// DateTime constructor throws Exception when invalid input given
 				$value = Nette\DateTime::from($value); // clone DateTime when given
 			} catch (\Exception $e) {
 				$value = NULL;
 			}
-		}
-
-		if ($value instanceof DateTime) {
-			$this->rawValue = $value->format(self::W3C_DATETIME_FORMAT);
 		}
 
 		$this->value = $value;
