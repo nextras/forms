@@ -18,6 +18,6 @@ jQuery(function($) {
 			format: el.is('.date') ? 'd. m. yyyy' : 'd. m. yyyy - hh:ii',
 			autoclose: true
 		});
-		el.datetimepicker('hide');
+		el.attr('value') && el.datetimepicker('setValue');
 	});
 });
