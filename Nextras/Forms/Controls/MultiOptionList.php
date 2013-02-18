@@ -42,13 +42,21 @@ class MultiOptionList extends OptionList
 
 	public function setValue($values)
 	{
-		$this->value = array();
-		foreach ((array) $values as $value) {
+		$this->value = $values;
+		return $this;
+	}
+
+
+
+	public function getValue()
+	{
+		$values = array();
+		foreach ((array) $this->value as $value) {
 			if (isset($this->items[$value])) {
-				$this->value[] = (string) $value;
+				$values[] = (string) $value;
 			}
 		}
-		return $this;
+		return $values;
 	}
 
 

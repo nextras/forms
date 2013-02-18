@@ -52,7 +52,7 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAg
 	 */
 	public function setValue($value)
 	{
-		$this->value = is_scalar($value) && isset($this->items[$value]) ? (string) $value : NULL;
+		$this->value = $value;
 		return $this;
 	}
 
@@ -64,7 +64,7 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAg
 	 */
 	public function getValue()
 	{
-		return $this->value;
+		return is_scalar($this->value) && isset($this->items[$this->value]) ? (string) $this->value : NULL;
 	}
 
 
