@@ -41,10 +41,16 @@ class Macros extends MacroSet
 		if (($pos = strpos($input, ':')) !== FALSE) {
 			$key   = $writer->formatWord(substr($input, $pos + 1));
 			$input = $writer->formatWord(substr($input, 0, $pos));
-			return $writer->write('echo $_form[%raw]->getControlItem(%raw)->addAttributes(%node.array)', $input, $key);
+			return $writer->write(
+				'$_input = is_object(%raw) ? %raw : $_form[%raw]; echo $_input->getControlItem(%raw)->addAttributes(%node.array)',
+				$input,	$input,	$input,	$key
+			);
 		} else {
 			$input = $writer->formatWord($input);
-			return $writer->write('echo $_form[%raw]->getControl()->addAttributes(%node.array)', $input);
+			return $writer->write(
+				'$_input = is_object(%raw) ? %raw : $_form[%raw]; echo $_input->getControl()->addAttributes(%node.array)',
+				$input,	$input,	$input
+			);
 		}
 	}
 
@@ -59,10 +65,16 @@ class Macros extends MacroSet
 		if (($pos = strpos($input, ':')) !== FALSE) {
 			$key   = $writer->formatWord(substr($input, $pos + 1));
 			$input = $writer->formatWord(substr($input, 0, $pos));
-			$code  = $writer->write('echo $_form[%raw]->getLabelItem(%raw)->addAttributes(%node.array)', $input, $key);
+			$code  = $writer->write(
+				'$_label = is_object(%raw) ? %raw : $_form[%raw]; echo $_label->getLabelItem(%raw)->addAttributes(%node.array)',
+				$input, $input,	$input,	$key
+			);
 		} else {
 			$input = $writer->formatWord($input);
-			$code  = $writer->write('echo $_form[%raw]->getLabel()->addAttributes(%node.array)', $input);
+			$code  = $writer->write(
+				'$_label = is_object(%raw) ? %raw : $_form[%raw]; echo $_label->getLabel()->addAttributes(%node.array)',
+				$input,	$input,	$input
+			);
 		}
 
 		if (!$node->isEmpty) {
