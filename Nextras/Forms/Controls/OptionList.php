@@ -115,10 +115,15 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	/**
 	 * Generates control's HTML element.
 	 *
+	 * @param  string
 	 * @return Html
 	 */
-	public function getControl()
+	public function getControl($key = NULL)
 	{
+		if ($key) {
+			return $this->getControlItem($key);
+		}
+
 		$container = Html::el();
 		foreach ($this->items as $key => $val) {
 			$label = $this->getLabelItem($key);
