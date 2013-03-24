@@ -11,7 +11,6 @@
 namespace Nextras\Forms\Controls;
 
 use Nette;
-use Nette\Utils\Html;
 use Nette\Forms\Form;
 use Nette\Forms\IControl;
 use Nette\Utils\Validators;

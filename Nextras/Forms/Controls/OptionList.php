@@ -11,6 +11,7 @@
 namespace Nextras\Forms\Controls;
 
 use Nette;
+use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
 
 
@@ -22,12 +23,12 @@ use Nette\Utils\Html;
  *
  * @property   array $items
  */
-class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAggregate, IListControl
+class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 {
 	/** @var array */
 	protected $items = array();
 
-	/** @var IControl */
+	/** @var BaseControl */
 	protected $inputPrototype;
 
 
@@ -83,7 +84,7 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAg
 	/**
 	 * Sets options from which to choose.
 	 * @param  array
-	 * @return RadioList  provides a fluent interface
+	 * @return static  provides a fluent interface
 	 */
 	public function setItems(array $items)
 	{
@@ -114,7 +115,7 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAg
 	/**
 	 * Generates control's HTML element.
 	 *
-	 * @return Nette\Utils\Html
+	 * @return Html
 	 */
 	public function getControl()
 	{
@@ -149,7 +150,6 @@ class OptionList extends Nette\Forms\Controls\BaseControl implements \IteratorAg
 	/**
 	 * Generates label's HTML element.
 	 * @param  string
-	 * @return void
 	 */
 	public function getLabel($caption = NULL)
 	{
