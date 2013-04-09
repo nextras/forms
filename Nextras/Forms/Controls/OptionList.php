@@ -120,7 +120,7 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	 */
 	public function getControl($key = NULL)
 	{
-		if ($key) {
+		if ($key !== NULL) {
 			return $this->getControlItem($key);
 		}
 
@@ -155,9 +155,14 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	/**
 	 * Generates label's HTML element.
 	 * @param  string
+	 * @param  string
 	 */
-	public function getLabel($caption = NULL)
+	public function getLabel($caption = NULL, $key = NULL)
 	{
+		if ($key !== NULL) {
+			return $this->getLabelItem($key, $caption);
+		}
+
 		$label = parent::getLabel($caption);
 		$label->for = NULL;
 		return $label;
