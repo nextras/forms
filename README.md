@@ -39,14 +39,6 @@ Container::extensionMethod('addDateTimePicker', function (Container $container, 
 });
 ```
 
-Configure macros auto-install in your `config.neon`:
-```neon
-nette:
-	latte:
-		macros:
-			- Nextras\Forms\Latte\Macros::install
-```
-
 Render IListControls as you wish:
 ````php
 $form->addMultiOptionList('list1', 'Pick your interests', ['a', 'b', 'c'])
@@ -65,7 +57,7 @@ $form->addMultiOptionList('list2', 'Pick your interests', ['d', 'e', 'f'])
 <tr>
 	<th>{label list2/}</th>
 	<td>
-	{foreach $form['list2'] as $key => $label}
+	{foreach $form['list2']-items as $key => $label}
 		{label list2:$key class => checkbox}
 			{input list2:$key}
 			{$label}
