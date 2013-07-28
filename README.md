@@ -57,7 +57,7 @@ $form->addMultiOptionList('list2', 'Pick your interests', ['d', 'e', 'f'])
 <tr>
 	<th>{label list2/}</th>
 	<td>
-	{foreach $form['list2']-items as $key => $label}
+	{foreach $form['list2']->items as $key => $label}
 		{label list2:$key class => checkbox}
 			{input list2:$key}
 			{$label}
