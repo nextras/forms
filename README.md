@@ -61,14 +61,14 @@ $form->addMultiOptionList('list2', 'Pick your interests', ['d', 'e', 'f'])
 {form example}
 <table>
 <tr>
-	<th>{label list1/}</th>
+	<th>{label list1 /}</th>
 	<td>{input list1}</td>
 </tr>
 <tr>
-	<th>{label list2/}</th>
+	<th>{label list2 /}</th>
 	<td>
 	{foreach $form['list2']->items as $key => $label}
-		{label list2:$key class => checkbox}
+		{label list2:$key}
 			{input list2:$key}
 			{$label}
 		{/label}
