@@ -18,10 +18,12 @@ use Nette\Utils\Html;
 
 /**
  * Set of radion options.
+ * @author David Grudl
+ * @author Jan Skrasek
  *
- * @author     Jan Skrasek
- *
- * @property   array $items
+ * @property       array $items
+ * @property-read  Html  $container
+ * @property-read  Html  $itemContainer
  */
 class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 {
@@ -30,6 +32,12 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 
 	/** @var BaseControl */
 	protected $inputPrototype;
+
+	/** @var Html control container */
+	protected $container;
+
+	/** @var Html item element container */
+	protected $itemContainer;
 
 
 
@@ -41,8 +49,32 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	{
 		parent::__construct($label);
 		$this->control->type = 'radio';
+		$this->container = Html::el();
+		$this->itemContainer = Html::el('div')->addClass('radio');
 		if ($items !== NULL) {
 			$this->setItems($items);
+		}
+	}
+
+
+
+	/**
+	 * Loads HTTP data.
+	 * @return void
+	 */
+	public function loadHttpData()
+	{
+		$defaults = $this->getValue();
+		$this->value = $this->getHttpData();
+		if ($this->value !== NULL) {
+			if (is_array($this->disabled) && isset($this->disabled[$this->value])) {
+				$this->value = NULL;
+			} else {
+				$this->value = key(array($this->value => NULL));
+			}
+		}
+		if ($defaults && is_array($this->disabled)) {
+			$this->setDefaultValue($defaults);
 		}
 	}
 
@@ -53,7 +85,10 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	 */
 	public function setValue($value)
 	{
-		$this->value = $value;
+		if ($value !== NULL && !isset($this->items[(string) $value])) {
+			throw new Nette\InvalidArgumentException("Value '$value' is out of range of current items.");
+		}
+		$this->value = $value === NULL ? NULL : key(array((string) $value => NULL));
 		return $this;
 	}
 
@@ -65,7 +100,18 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	 */
 	public function getValue()
 	{
-		return is_scalar($this->value) && isset($this->items[$this->value]) ? (string) $this->value : NULL;
+		return isset($this->items[$this->value]) ? $this->value : NULL;
+	}
+
+
+
+	/**
+	 * Returns selected radio value (not checked).
+	 * @return mixed
+	 */
+	public function getRawValue()
+	{
+		return $this->value;
 	}
 
 
@@ -84,10 +130,14 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	/**
 	 * Sets options from which to choose.
 	 * @param  array
+	 * @param  bool
 	 * @return static  provides a fluent interface
 	 */
-	public function setItems(array $items)
+	public function setItems(array $items, $useKeys = TRUE)
 	{
+		if (!$useKeys) {
+			$items = array_combine($items, $items);
+		}
 		$this->items = $items;
 		return $this;
 	}
@@ -101,6 +151,49 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 	public function getItems()
 	{
 		return $this->items;
+	}
+
+
+
+	public function setDefaultValue($value)
+	{
+		parent::setDefaultValue($value);
+		if (is_array($this->disabled) && !is_array($value)) {
+			$key = key(array($value => NULL));
+			if (isset($this->disabled[$key]) && $this->value === NULL) {
+				$this->value = $key;
+			}
+		}
+		return $this;
+	}
+
+
+
+	public function setDisabled($value = TRUE)
+	{
+		if (!is_array($value)) {
+			return parent::setDisabled($value);
+		}
+		parent::setDisabled(FALSE);
+		$this->disabled = array_fill_keys($value, TRUE);
+		if (isset($this->disabled[$this->value])) {
+			$this->value = NULL;
+		}
+		return $this;
+	}
+
+
+
+	public function getContainerPrototype()
+	{
+		return $this->container;
+	}
+
+
+
+	public function getItemContainerPrototype()
+	{
+		return $this->itemContainer;
 	}
 
 
@@ -124,17 +217,17 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 			return $this->getControlItem($key);
 		}
 
-		$container = Html::el();
-		foreach ($this->items as $key => $val) {
+		$container = clone $this->container;
+		foreach ($this->items as $key => $caption) {
 			$label = $this->getLabelItem($key);
+			$label->setHtml($this->getControlItem($key));
+			$label->add($this->translate($caption));
 
-			$label->class[] = $this->control->type;
-			$text = $label->getText();
-			$label->setText('');
-			$label->add($this->getControlItem($key));
-			$label->add($text);
-
-			$container->add((string) $label);
+			$container->add(
+				$this->itemContainer->startTag() .
+				(string) $label .
+				$this->itemContainer->endTag()
+			);
 		}
 		return $container;
 	}
@@ -143,9 +236,12 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 
 	public function getControlItem($key)
 	{
+		$key = key(array($key => NULL));
+
 		$control = clone $this->getInputPrototype();
 		$control->id .= '-' . $key;
-		$control->checked = (string) $key === $this->getValue();
+		$control->checked = $this->getValue() === $key;
+		$control->disabled = is_array($this->disabled) ? isset($this->disabled[$key]) : $this->disabled;
 		$control->value = $key;
 		return $control;
 	}
@@ -154,17 +250,17 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 
 	/**
 	 * Generates label's HTML element.
-	 * @param  string
+	 * @param  mixed
 	 * @param  string
 	 */
 	public function getLabel($caption = NULL, $key = NULL)
 	{
 		if ($key !== NULL) {
-			return $this->getLabelItem($key, $caption);
+			$label = $this->getLabelItem($key, $caption);
+		} else {
+			$label = parent::getLabel($caption);
+			$label->for = NULL;
 		}
-
-		$label = parent::getLabel($caption);
-		$label->for = NULL;
 		return $label;
 	}
 
@@ -172,8 +268,7 @@ class OptionList extends BaseControl implements \IteratorAggregate, IListControl
 
 	public function getLabelItem($key, $caption = NULL)
 	{
-		$label = parent::getLabel();
-		$label->setText($caption ?: $this->translate($this->items[$key]));
+		$label = parent::getLabel($caption === NULL ? $this->items[$key] : $caption);
 		$label->for .= '-' . $key;
 		return $label;
 	}
