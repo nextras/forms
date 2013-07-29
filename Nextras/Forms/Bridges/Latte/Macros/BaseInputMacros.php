@@ -27,6 +27,7 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 		$me = new static($compiler);
 		$me->addMacro('input', array($me, 'macroInput'));
 		$me->addMacro('label', array($me, 'macroLabel'), array($me, 'macroLabelEnd'));
+		return $me;
 	}
 
 
