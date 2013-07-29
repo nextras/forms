@@ -36,10 +36,10 @@ class BS3InputMacros extends BaseInputMacros
 
 	public static function input(Html $input, BaseControl $control)
 	{
-		if ($control instanceof TextBase || $control instanceof SelectBox) {
+		if ($input->getName() === 'select' || ($input->getName() === 'input' && !in_array($input->type, array('radio', 'checkbox', 'file', 'hidden', 'range')))) {
 			$input->addClass('form-control');
 
-		} elseif ($control instanceof Button && !$control instanceof ImageButton) {
+		} elseif ($input->getName() === 'input' && $input->type !== 'image') {
 			$input->setName('button');
 			$input->add($input->value);
 			$input->addClass('btn');
