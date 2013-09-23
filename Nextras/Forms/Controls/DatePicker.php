@@ -54,7 +54,7 @@ class DatePicker extends Forms\Controls\BaseControl
 	{
 		$control = parent::getControl();
 		$control->addClass($control->type);
-		unset($control->data['nette-rules']);
+		$control->{'data-nette-rules'} = NULL;
 		list($min, $max) = $this->extractRangeRule($this->getRules());
 		if ($min !== NULL) {
 			$control->min = $min->format(self::W3C_DATE_FORMAT);
