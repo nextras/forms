@@ -150,14 +150,14 @@ class DatePicker extends Forms\Controls\BaseControl
 	{
 		$controlMin = $controlMax = NULL;
 		foreach ($rules as $rule) {
-			if ($rule->type === Forms\Rule::VALIDATOR) {
-				if ($rule->operation === Forms\Form::RANGE && !$rule->isNegative) {
+			if (!$rule->branch) {
+				if ($rule->validator === Forms\Form::RANGE && !$rule->isNegative) {
 					$ruleMinMax = $rule->arg;
 				}
 
-			} elseif ($rule->type === Forms\Rule::CONDITION) {
-				if ($rule->operation === Forms\Form::FILLED && !$rule->isNegative && $rule->control === $this) {
-					$ruleMinMax = $this->extractRangeRule($rule->subRules);
+			} elseif ($rule->branch) {
+				if ($rule->validator === Forms\Form::FILLED && !$rule->isNegative && $rule->control === $this) {
+					$ruleMinMax = $this->extractRangeRule($rule->branch);
 				}
 			}
 
