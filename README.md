@@ -5,6 +5,7 @@ List of components:
 - **MultiOptionList** - multiple option control rendered as checkbox list
 - **DatePicker** - date picker, represented by DateTime object
 - **DateTimePicker** - date & time picker, represented by DateTime object
+- **Tyheahead** - the best autocomplete for your forms
 - **BS3InputMacros** - input macros for Bootstrap 3 (adds some css classes)
 
 ## Installation
@@ -37,6 +38,9 @@ Container::extensionMethod('addDatePicker', function (Container $container, $nam
 });
 Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = NULL) {
 	return $container[$name] = new Controls\DateTimePicker($label);
+});
+Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = NULL, $callback = NULL) {
+	return $container[$name] = new Controls\Typeahead($label, $callback);
 });
 ```
 
