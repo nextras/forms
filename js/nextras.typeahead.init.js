@@ -9,7 +9,10 @@
 jQuery(function($) {
 	$('.typeahead').each(function() {
 		$(this).typeahead({
-			'remote': $(this).attr('data-typeahead-url') + '&q=%QUERY'
+			'remote': {
+                            url: $(this).attr('data-typeahead-url'),
+                            wildcard: 'INSERTQUERYHERE'                                   
+                        }
 		});
 	});
 });
