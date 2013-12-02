@@ -376,8 +376,16 @@ trait ComponentControlTrait
 	 */
 	public function link($destination, $args = array())
 	{
-		$path = $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
-		return $this->getPresenter()->link($path . '-' . $destination, is_array($args) ? $args : array_slice(func_get_args(), 1));
+		if (!(isset($destination[0]) && $destination[0] === ':')) {
+			$path = $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
+			$a = strpos($destination, '//');
+			if ($a !== FALSE) {
+				$destination = substr($destination, 0, $a + 2) . $path . '-' . substr($destination, $a + 2);
+			} else {
+				$destination = $path . '-' . $destination;
+			}
+		}
+		return $this->getPresenter()->link($destination, is_array($args) ? $args : array_slice(func_get_args(), 1));
 	}
 
 
