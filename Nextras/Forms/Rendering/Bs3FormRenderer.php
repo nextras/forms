@@ -105,14 +105,15 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		$this->form->getElementPrototype()->class('form-horizontal');
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
-				$control->setAttribute('class', empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default');
+				$class = empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default';
+				$control->setAttribute('class', ((array) $control->control->class) + array($class));
 				$usedPrimary = TRUE;
 
 			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
-				$control->setAttribute('class', 'form-control');
+				$control->setAttribute('class', ((array) $control->control->class) + array('form-control'));
 
 			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
-				$control->getSeparatorPrototype()->setName('div')->class($control->getControlPrototype()->type);
+				$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
 			}
 		}
 	}
