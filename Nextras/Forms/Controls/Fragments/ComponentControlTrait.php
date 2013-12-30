@@ -376,6 +376,7 @@ trait ComponentControlTrait
 	 */
 	public function link($destination, $args = array())
 	{
+		$args = is_array($args) ? $args : array_slice(func_get_args(), 1);
 		if (!(isset($destination[0]) && $destination[0] === ':')) {
 			$path = $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
 			$a = strpos($destination, '//');
@@ -384,8 +385,13 @@ trait ComponentControlTrait
 			} else {
 				$destination = $path . '-' . $destination;
 			}
+			$newArgs = [];
+			foreach ($args as $key => $arg) {
+				$newArgs[$path . '-' . $key] = $arg;
+			}
+			$args = $newArgs;
 		}
-		return $this->getPresenter()->link($destination, is_array($args) ? $args : array_slice(func_get_args(), 1));
+		return $this->getPresenter()->link($destination, $args);
 	}
 
 
