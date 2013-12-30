@@ -11,12 +11,12 @@
 		},
 		{
 			"name": "Nextras Community",
-			"homepage": "https://github.com/nextras/forms/graphs/contributors"
+			"homepage": "https://github.com/nextras/forms/forms/graphs/contributors"
 		}
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"nette/nette": "~2.1.0@rc"
+		"nette/nette": "~2.1@rc"
 	},
 	"extra": {
 		"branch-alias": {

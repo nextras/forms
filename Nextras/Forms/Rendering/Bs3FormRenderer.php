@@ -53,13 +53,6 @@ class Bs3FormRenderer extends DefaultFormRenderer
 	}
 
 
-	public function renderErrors(Nette\Forms\IControl $control = NULL)
-	{
-		$this->controlsInit();
-		return parent::renderErrors($control);
-	}
-
-
 	public function renderBody()
 	{
 		$this->controlsInit();
