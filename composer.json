@@ -16,7 +16,7 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"nette/nette": "dev-master"
+		"nette/nette": "~2.1.0@rc"
 	},
 	"autoload": {
 		"psr-0": { "Nextras\\Forms": "" }
