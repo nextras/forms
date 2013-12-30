@@ -25,7 +25,7 @@ use Nette\Utils\Html;
  * @property-read  Html  $container
  * @property-read  Html  $itemContainer
  */
-class OptionList extends BaseControl implements \IteratorAggregate, IListControl
+class OptionList extends BaseControl implements \IteratorAggregate
 {
 	/** @var array */
 	protected $items = array();
