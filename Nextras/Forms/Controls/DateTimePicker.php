@@ -14,53 +14,18 @@ use Nette;
 use DateTime;
 
 
-
 /**
  * Form control for selecting date with time
  *
  * @author   Jan Skrasek
  */
-class DateTimePicker extends DatePicker
+class DateTimePicker extends DateTimePickerPrototype
 {
+	/** @var string */
+	protected $htmlFormat = self::W3C_DATETIME_FORMAT;
 
-	/** @link http://dev.w3.org/html5/spec/common-microsyntaxes.html#parse-a-local-date-and-time-string */
-	const W3C_DATETIME_FORMAT = 'Y-m-d\TH:i:s';
-
-
-	/**
-	 * Class constructor.
-	 *
-	 * @author Jan Skrasek
-	 * @param  string
-	 */
-	public function __construct($label = NULL)
-	{
-		parent::__construct($label);
-		$this->control->type = 'datetime-local';
-	}
-
-
-	/**
-	 * Generates control's HTML element.
-	 *
-	 * @author Jan Skrasek
-	 * @return Nette\Utils\Html
-	 */
-	public function getControl()
-	{
-		$control = parent::getControl();
-		list($min, $max) = $this->extractRangeRule($this->getRules());
-		if ($min !== NULL) {
-			$control->min = $min->format(self::W3C_DATETIME_FORMAT);
-		}
-		if ($max !== NULL) {
-			$control->max = $max->format(self::W3C_DATETIME_FORMAT);
-		}
-		if ($this->value) {
-			$control->value = $this->value->format(self::W3C_DATETIME_FORMAT);
-		}
-		return $control;
-	}
+	/** @var string */
+	protected $htmlType = 'datetime-local';
 
 
 	/**
@@ -70,8 +35,9 @@ class DateTimePicker extends DatePicker
 	 * @param  DateTime|int|string
 	 * @return self
 	 */
-	public function setValue($value)
+	public function getValue()
 	{
+		$value = $this->value;
 		if ($value instanceof DateTime) {
 
 		} elseif (is_int($value)) { // timestamp
@@ -111,8 +77,7 @@ class DateTimePicker extends DatePicker
 			}
 		}
 
-		$this->value = $value;
-		return $this;
+		return $value;
 	}
 
 }

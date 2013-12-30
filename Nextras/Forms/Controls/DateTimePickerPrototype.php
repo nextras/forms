@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * This file is part of the Nextras community extensions of Nette Framework
+ *
+ * @license    MIT
+ * @link       https://github.com/nextras
+ * @author     Jan Skrasek
+ */
+
+namespace Nextras\Forms\Controls;
+
+use DateTime;
+use Nette\Forms\Controls\TextBase;
+use Nette\Forms\Form;
+use Nette\Forms\IControl;
+use Nette\Forms\Rules;
+use Nette\Utils\Html;
+use Nette\Utils\Validators;
+
+
+abstract class DateTimePickerPrototype extends TextBase
+{
+	/** @link http://dev.w3.org/html5/spec/common-microsyntaxes.html#valid-date-string */
+	const W3C_DATE_FORMAT = 'Y-m-d';
+
+	/** @link http://dev.w3.org/html5/spec/common-microsyntaxes.html#parse-a-local-date-and-time-string */
+	const W3C_DATETIME_FORMAT = 'Y-m-d\TH:i:s';
+
+	/** @var string */
+	protected $htmlFormat;
+
+	/** @var string */
+	protected $htmlType;
+
+
+	/**
+	 * Generates control's HTML element.
+	 *
+	 * @return Html
+	 */
+	public function getControl()
+	{
+		$control = parent::getControl();
+		$control->type = $this->htmlType;
+		$control->addClass($this->htmlType);
+		$control->{'data-nette-rules'} = NULL;
+
+		list($min, $max) = $this->extractRangeRule($this->getRules());
+		if ($min instanceof DateTime) {
+			$control->min = $min->format($this->htmlFormat);
+		}
+		if ($max instanceof DateTime) {
+			$control->max = $max->format($this->htmlFormat);
+		}
+		if ($this->getValue() instanceof DateTime) {
+			$control->value = $this->getValue()->format($this->htmlFormat);
+		}
+
+		return $control;
+	}
+
+
+	public function setValue($value)
+	{
+		return parent::setValue($value instanceof DateTime ? $value->format($this->htmlFormat) : $value);
+	}
+
+
+	/**
+	 * Finds minimum and maximum allowed dates.
+	 *
+	 * @return array 0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
+	 */
+	protected function extractRangeRule(Rules $rules)
+	{
+		$controlMin = $controlMax = NULL;
+		foreach ($rules as $rule) {
+			if (!$rule->branch) {
+				if ($rule->validator === Form::RANGE && !$rule->isNegative) {
+					$ruleMinMax = $rule->arg;
+				}
+
+			} elseif ($rule->branch) {
+				if ($rule->validator === Form::FILLED && !$rule->isNegative && $rule->control === $this) {
+					$ruleMinMax = $this->extractRangeRule($rule->branch);
+				}
+			}
+
+			if (isset($ruleMinMax)) {
+				list($ruleMin, $ruleMax) = $ruleMinMax;
+				if ($ruleMin !== NULL && ($controlMin === NULL || $ruleMin > $controlMin)) {
+					$controlMin = $ruleMin;
+				}
+				if ($ruleMax !== NULL && ($controlMax === NULL || $ruleMax < $controlMax)) {
+					$controlMax = $ruleMax;
+				}
+				$ruleMinMax = NULL;
+			}
+		}
+		return array($controlMin, $controlMax);
+	}
+
+}
