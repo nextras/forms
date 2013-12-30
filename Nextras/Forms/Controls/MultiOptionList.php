@@ -125,7 +125,7 @@ class MultiOptionList extends OptionList
 
 
 
-	public function getControlItem($key)
+	public function getControlPart($key)
 	{
 		$key = key(array($key => NULL));
 		$control = clone $this->getInputPrototype();

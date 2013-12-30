@@ -214,13 +214,13 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	public function getControl($key = NULL)
 	{
 		if ($key !== NULL) {
-			return $this->getControlItem($key);
+			return $this->getControlPart($key);
 		}
 
 		$container = clone $this->container;
 		foreach ($this->items as $key => $caption) {
-			$label = $this->getLabelItem($key);
-			$label->setHtml($this->getControlItem($key));
+			$label = $this->getLabelPart($key);
+			$label->setHtml($this->getControlPart($key));
 			$label->add($this->translate($caption));
 
 			$container->add(
@@ -234,7 +234,7 @@ class OptionList extends BaseControl implements \IteratorAggregate
 
 
 
-	public function getControlItem($key)
+	public function getControlPart($key)
 	{
 		$key = key(array($key => NULL));
 
@@ -248,6 +248,15 @@ class OptionList extends BaseControl implements \IteratorAggregate
 
 
 
+	/** @deprecated */
+	public function getControlItem($key)
+	{
+		return call_user_func_array([$this, 'getControlPart'], func_get_args());
+	}
+
+
+
+
 	/**
 	 * Generates label's HTML element.
 	 * @param  mixed
@@ -256,7 +265,7 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	public function getLabel($caption = NULL, $key = NULL)
 	{
 		if ($key !== NULL) {
-			$label = $this->getLabelItem($key, $caption);
+			$label = $this->getLabelPart($key, $caption);
 		} else {
 			$label = parent::getLabel($caption);
 			$label->for = NULL;
@@ -266,11 +275,19 @@ class OptionList extends BaseControl implements \IteratorAggregate
 
 
 
-	public function getLabelItem($key, $caption = NULL)
+	public function getLabelPart($key, $caption = NULL)
 	{
 		$label = parent::getLabel($caption === NULL ? $this->items[$key] : $caption);
 		$label->for .= '-' . $key;
 		return $label;
+	}
+
+
+
+	/** @deprecated */
+	public function getLabelItem($key, $caption = NULL)
+	{
+		return call_user_func_array([$this, 'getLabelPart'], func_get_args());
 	}
 
 
