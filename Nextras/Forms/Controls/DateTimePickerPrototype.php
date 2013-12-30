@@ -10,7 +10,9 @@
 
 namespace Nextras\Forms\Controls;
 
+use Closure;
 use DateTime;
+use Nette;
 use Nette\Forms\Controls\TextBase;
 use Nette\Forms\Form;
 use Nette\Forms\IControl;
@@ -32,6 +34,9 @@ abstract class DateTimePickerPrototype extends TextBase
 
 	/** @var string */
 	protected $htmlType;
+
+	/** @var Closure[] */
+	protected $parsers = [];
 
 
 	/**
@@ -66,6 +71,55 @@ abstract class DateTimePickerPrototype extends TextBase
 	{
 		return parent::setValue($value instanceof DateTime ? $value->format($this->htmlFormat) : $value);
 	}
+
+
+	/**
+	 * @return Nette\DateTime|NULL
+	 */
+	public function getValue()
+	{
+		if ($this->value instanceof DateTime) {
+			// clone
+			return Nette\DateTime::from($this->value);
+
+		} elseif (is_int($this->value)) {
+			// timestamp
+			return Nette\DateTime::from($this->value);
+
+		} elseif (empty($this->value)) {
+			return NULL;
+
+		} elseif (is_string($this->value)) {
+			$parsers = $this->parsers;
+			$parsers[] = $this->getDefaultParser();
+
+			foreach ($parsers as $parser) {
+				$value = $parser($this->value);
+				if ($value instanceof DateTime) {
+					return $value;
+				}
+			}
+
+			try {
+				// DateTime constructor throws Exception when invalid input given
+				return Nette\DateTime::from($this->value);
+			} catch (\Exception $e) {
+				return NULL;
+			}
+		}
+
+		return NULL;
+	}
+
+
+	public function addParser(Closure $parser)
+	{
+		$this->parsers[] = $parser;
+		return $this;
+	}
+
+
+	abstract protected function getDefaultParser();
 
 
 	/**

@@ -12,7 +12,6 @@ namespace Nextras\Forms\Controls;
 
 use Nette;
 use Nette\Forms;
-use DateTime;
 use Nette\Forms\Controls\TextBase;
 
 
@@ -31,49 +30,26 @@ class DatePicker extends DateTimePickerPrototype
 	protected $htmlType = 'date';
 
 
-	/**
-	 * Sets DatePicker value.
-	 *
-	 * @param  DateTime|int|string
-	 * @return self
-	 */
-	public function getValue()
+	protected function getDefaultParser()
 	{
-		$value = $this->value;
-		if ($value instanceof DateTime) {
-
-		} elseif (is_int($value)) { // timestamp
-
-		} elseif (empty($value)) {
-			$value = NULL;
-
-		} elseif (is_string($value)) {
-			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})([. -] *(?P<yyyy>\d{4})?)?$#', $value, $matches)) {
-				$dd = $matches['dd'];
-				$mm = $matches['mm'];
-				$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
-
-				if (checkdate($mm, $dd, $yyyy)) {
-					$value = "$yyyy-$mm-$dd";
-				} else {
-					$value = NULL;
-				}
+		return function($value) {
+			if (!preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})([. -] *(?P<yyyy>\d{4})?)?$#', $value, $matches)) {
+				return NULL;
 			}
-		} else {
-			throw new \InvalidArgumentException();
-		}
 
-		if ($value !== NULL) {
-			try {
-				// DateTime constructor throws Exception when invalid input given
-				$value = Nette\DateTime::from($value); // clone DateTime when given
-				$value->setTime(0, 0, 0); // unify user input to day start
-			} catch (\Exception $e) {
-				$value = NULL;
+			$dd = $matches['dd'];
+			$mm = $matches['mm'];
+			$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
+
+			if (!checkdate($mm, $dd, $yyyy)) {
+				return NULL;
 			}
-		}
 
-		return $value;
+			$value = new Nette\DateTime;
+			$value->setDate($yyyy, $mm, $dd);
+			$value->setTime(0, 0, 0);
+			return $value;
+		};
 	}
 
 }
