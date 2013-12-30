@@ -285,6 +285,20 @@ trait ComponentControlTrait
 
 
 	/**
+	 * This method will be called when the component (or component's parent)
+	 * becomes attached to a monitored object. Do not call this method yourself.
+	 * @param  Nette\ComponentModel\IComponent
+	 * @return void
+	 */
+	protected function attached($presenter)
+	{
+		if ($presenter instanceof Presenter) {
+			$this->params = $presenter->popGlobalParameters($this->getUniqueId());
+		}
+	}
+
+
+	/**
 	 * @return void
 	 */
 	protected function validateParent(Nette\ComponentModel\IContainer $parent)
