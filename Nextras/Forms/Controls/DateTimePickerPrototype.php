@@ -53,8 +53,9 @@ abstract class DateTimePickerPrototype extends TextBase
 		if ($max instanceof DateTime) {
 			$control->max = $max->format($this->htmlFormat);
 		}
-		if ($this->getValue() instanceof DateTime) {
-			$control->value = $this->getValue()->format($this->htmlFormat);
+		$value = $this->getValue();
+		if ($value instanceof DateTime) {
+			$control->value = $value->format($this->htmlFormat);
 		}
 
 		return $control;
