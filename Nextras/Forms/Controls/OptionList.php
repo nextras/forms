@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -13,7 +13,6 @@ namespace Nextras\Forms\Controls;
 use Nette;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
-
 
 
 /**
@@ -40,7 +39,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	protected $itemContainer;
 
 
-
 	/**
 	 * @param  string  label
 	 * @param  array   options from which to choose
@@ -55,7 +53,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 			$this->setItems($items);
 		}
 	}
-
 
 
 	/**
@@ -79,7 +76,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * @inheritDoc
 	 */
@@ -93,7 +89,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Returns selected radio value.
 	 * @return mixed
@@ -102,7 +97,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	{
 		return isset($this->items[$this->value]) ? $this->value : NULL;
 	}
-
 
 
 	/**
@@ -115,7 +109,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Has been any radio button selected?
 	 * @return bool
@@ -124,7 +117,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	{
 		return $this->getValue() !== NULL;
 	}
-
 
 
 	/**
@@ -143,7 +135,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Returns options from which to choose.
 	 * @return array
@@ -152,7 +143,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	{
 		return $this->items;
 	}
-
 
 
 	public function setDefaultValue($value)
@@ -166,7 +156,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 		}
 		return $this;
 	}
-
 
 
 	public function setDisabled($value = TRUE)
@@ -183,12 +172,10 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	public function getContainerPrototype()
 	{
 		return $this->container;
 	}
-
 
 
 	public function getItemContainerPrototype()
@@ -197,12 +184,10 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->items);
 	}
-
 
 
 	/**
@@ -233,7 +218,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	public function getControlPart($key)
 	{
 		$key = key(array($key => NULL));
@@ -255,8 +239,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
-
 	/**
 	 * Generates label's HTML element.
 	 * @param  mixed
@@ -274,7 +256,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	public function getLabelPart($key, $caption = NULL)
 	{
 		$label = parent::getLabel($caption === NULL ? $this->items[$key] : $caption);
@@ -283,13 +264,11 @@ class OptionList extends BaseControl implements \IteratorAggregate
 	}
 
 
-
 	/** @deprecated */
 	public function getLabelItem($key, $caption = NULL)
 	{
 		return call_user_func_array([$this, 'getLabelPart'], func_get_args());
 	}
-
 
 
 	protected function getInputPrototype()
@@ -300,7 +279,6 @@ class OptionList extends BaseControl implements \IteratorAggregate
 
 		return $this->inputPrototype = $this->createInputPrototype();
 	}
-
 
 
 	protected function createInputPrototype()

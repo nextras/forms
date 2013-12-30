@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -27,7 +27,6 @@ class DateTimePicker extends DatePicker
 	const W3C_DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
 
-
 	/**
 	 * Class constructor.
 	 *
@@ -39,7 +38,6 @@ class DateTimePicker extends DatePicker
 		parent::__construct($label);
 		$this->control->type = 'datetime-local';
 	}
-
 
 
 	/**
@@ -63,7 +61,6 @@ class DateTimePicker extends DatePicker
 		}
 		return $control;
 	}
-
 
 
 	/**

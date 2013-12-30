@@ -2,7 +2,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 

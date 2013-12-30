@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -15,7 +15,6 @@ use Nette\Forms\Form;
 use Nette\Forms\IControl;
 use Nette\Utils\Validators;
 use Nette\Utils\Html;
-
 
 
 /**
@@ -31,14 +30,12 @@ class MultiOptionList extends OptionList
 	protected $value = array();
 
 
-
 	public function __construct($label = NULL, array $items = NULL)
 	{
 		parent::__construct($label, $items);
 		$this->control->type = 'checkbox';
 		$this->itemContainer = Html::el('div')->addClass('checkbox');
 	}
-
 
 
 	public function loadHttpData()
@@ -59,7 +56,6 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	public function setValue($values)
 	{
 		$this->value = array();
@@ -68,7 +64,6 @@ class MultiOptionList extends OptionList
 		}
 		return $this;
 	}
-
 
 
 	public function getValue()
@@ -83,12 +78,10 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	public function isFilled()
 	{
 		return count($this->getValue()) > 0;
 	}
-
 
 
 	public function setDefaultValue($value)
@@ -104,7 +97,6 @@ class MultiOptionList extends OptionList
 		}
 		return $this;
 	}
-
 
 
 	public function setDisabled($value = TRUE)
@@ -124,7 +116,6 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	public function getControlPart($key)
 	{
 		$key = key(array($key => NULL));
@@ -137,7 +128,6 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	protected function createInputPrototype()
 	{
 		$control = parent::createInputPrototype();
@@ -147,9 +137,7 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	/********************* validation *******************/
-
 
 
 	public static function validateMinLength(IControl $control, $length)
@@ -158,12 +146,10 @@ class MultiOptionList extends OptionList
 	}
 
 
-
 	public static function validateMaxLength(IControl $control, $length)
 	{
 		return count($control->getValue()) <= $length;
 	}
-
 
 
 	public static function validateLength(IControl $control, $range)

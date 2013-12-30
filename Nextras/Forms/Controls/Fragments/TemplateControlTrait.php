@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -56,7 +56,6 @@ trait TemplateControlTrait
 	}
 
 
-
 	/**
 	 * Common render method.
 	 * @return void
@@ -64,7 +63,6 @@ trait TemplateControlTrait
 	protected function beforeRender()
 	{
 	}
-
 
 
 	/**
@@ -75,7 +73,6 @@ trait TemplateControlTrait
 	{
 		echo $this->toString();
 	}
-
 
 
 	/**

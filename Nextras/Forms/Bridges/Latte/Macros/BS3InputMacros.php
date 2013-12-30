@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -19,7 +19,6 @@ use Nette\Forms\Controls\BaseControl;
 use Nextras;
 
 
-
 class BS3InputMacros extends BaseInputMacros
 {
 
@@ -31,7 +30,6 @@ class BS3InputMacros extends BaseInputMacros
 
 		return $label;
 	}
-
 
 
 	public static function input(Html $input, BaseControl $control)

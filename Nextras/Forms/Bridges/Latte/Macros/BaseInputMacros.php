@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Skrasek
  */
 
@@ -18,7 +18,6 @@ use Nette\Forms\Controls\BaseControl;
 use Nextras;
 
 
-
 abstract class BaseInputMacros extends Latte\Macros\MacroSet
 {
 
@@ -29,7 +28,6 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 		$me->addMacro('label', array($me, 'macroLabel'), array($me, 'macroLabelEnd'));
 		return $me;
 	}
-
 
 
 	/**
@@ -53,8 +51,6 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 		);
 	}
 
-
-
 	/**
 	 * {/label}
 	 */
@@ -65,7 +61,6 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 			return $writer->write('?></label><?php');
 		}
 	}
-
 
 
 	/**
@@ -90,12 +85,10 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 	}
 
 
-
 	public static function label(Html $label, BaseControl $control)
 	{
 		return $label;
 	}
-
 
 
 	public static function input(Html $input, BaseControl $control)

@@ -4,7 +4,7 @@
  * This file is part of the Nextras community extensions of Nette Framework
  *
  * @license    MIT
- * @link       https://github.com/nextras
+ * @link       https://github.com/nextras/forms
  * @author     Jan Tvrdik (http://merxes.cz)
  */
 
@@ -13,7 +13,6 @@ namespace Nextras\Forms\Controls;
 use Nette;
 use Nette\Forms;
 use DateTime;
-
 
 
 /**
@@ -31,7 +30,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	protected $value;
 
 
-
 	/**
 	 * Class constructor.
 	 *
@@ -42,7 +40,6 @@ class DatePicker extends Forms\Controls\BaseControl
 		parent::__construct($label);
 		$this->control->type = 'date';
 	}
-
 
 
 	/**
@@ -67,7 +64,6 @@ class DatePicker extends Forms\Controls\BaseControl
 		}
 		return $control;
 	}
-
 
 
 	/**
@@ -116,7 +112,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	}
 
 
-
 	/**
 	 * Does user enter anything?
 	 *
@@ -128,7 +123,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	}
 
 
-
 	/**
 	 * Is entered values within allowed range?
 	 *
@@ -138,7 +132,6 @@ class DatePicker extends Forms\Controls\BaseControl
 	{
 		return Nette\Utils\Validators::isInRange($control->getValue(), $range);
 	}
-
 
 
 	/**
