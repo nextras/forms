@@ -22,7 +22,9 @@ use Nextras\Forms\Controls\Fragments\ComponentControlTrait;
  */
 class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI\ISignalReceiver
 {
-	use ComponentControlTrait;
+	use ComponentControlTrait {
+		attached as componentControlAttached;
+	}
 
 	/** @var Nette\Utils\Callback */
 	protected $callback;
@@ -31,17 +33,21 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	public function __construct($caption = NULL, $callback = NULL)
 	{
 		parent::__construct($caption);
-		$this->control->addClass('typeahead');
 		$this->setCallback($callback);
 	}
 
 
-	protected function attached($component)
+	public function getControl()
 	{
-		parent::attached($component);
-		if ($component instanceof Nette\Application\IPresenter) {
-			$this->control->{'data-typeahead-url'} = $this->link('autocomplete!');
-		}
+		$control = parent::getControl();
+		$control->addClass('typeahead');
+		return $control;
+	}
+
+
+	public function setCallback($callback)
+	{
+		$this->callback = $callback;
 	}
 
 
@@ -55,9 +61,13 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	}
 
 
-	public function setCallback($callback)
+	protected function attached($component)
 	{
-		$this->callback = $callback;
+		parent::attached($component);
+		$this->componentControlAttached($component);
+		if ($component instanceof Nette\Application\IPresenter) {
+			$this->control->{'data-typeahead-url'} = $this->link('autocomplete!', ['q' => '__QUERY_PLACEHOLDER__']);
+		}
 	}
 
 }

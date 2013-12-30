@@ -285,6 +285,20 @@ trait ComponentControlTrait
 
 
 	/**
+	 * This method will be called when the component (or component's parent)
+	 * becomes attached to a monitored object. Do not call this method yourself.
+	 * @param  Nette\ComponentModel\IComponent
+	 * @return void
+	 */
+	protected function attached($presenter)
+	{
+		if ($presenter instanceof Presenter) {
+			$this->params = $presenter->popGlobalParameters($this->getUniqueId());
+		}
+	}
+
+
+	/**
 	 * @return void
 	 */
 	protected function validateParent(Nette\ComponentModel\IContainer $parent)
@@ -376,6 +390,7 @@ trait ComponentControlTrait
 	 */
 	public function link($destination, $args = array())
 	{
+		$args = is_array($args) ? $args : array_slice(func_get_args(), 1);
 		if (!(isset($destination[0]) && $destination[0] === ':')) {
 			$path = $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
 			$a = strpos($destination, '//');
@@ -384,8 +399,13 @@ trait ComponentControlTrait
 			} else {
 				$destination = $path . '-' . $destination;
 			}
+			$newArgs = [];
+			foreach ($args as $key => $arg) {
+				$newArgs[$path . '-' . $key] = $arg;
+			}
+			$args = $newArgs;
 		}
-		return $this->getPresenter()->link($destination, is_array($args) ? $args : array_slice(func_get_args(), 1));
+		return $this->getPresenter()->link($destination, $args);
 	}
 
 
