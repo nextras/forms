@@ -10,8 +10,12 @@
 			"homepage": "http://davidgrudl.com"
 		},
 		{
+			"name": "Jan Škrášek",
+			"homepage": "http://jan.skrasek.com"
+		},
+		{
 			"name": "Nextras Community",
-			"homepage": "https://github.com/nextras/forms/forms/graphs/contributors"
+			"homepage": "https://github.com/nextras/forms/graphs/contributors"
 		}
 	],
 	"require": {
