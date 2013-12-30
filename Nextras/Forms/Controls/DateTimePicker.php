@@ -46,20 +46,21 @@ class DateTimePicker extends DateTimePickerPrototype
 			$value = NULL;
 
 		} elseif (is_string($value)) {
-			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ -@] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2}))?$#', $value, $matches)) {
+			if (preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ -@] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2})(?:[:.](?P<ss>\d{1,2}))?)?$#', $value, $matches)) {
 				$dd = $matches['dd'];
 				$mm = $matches['mm'];
 				$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
 
 				$hh = isset($matches['hh']) ? $matches['hh'] : 0;
 				$ii = isset($matches['ii']) ? $matches['ii'] : 0;
+				$ss = isset($matches['ss']) ? $matches['ss'] : 0;
 
-				if (!($hh >= 0 && $hh < 24 && $ii >= 0 && $ii < 60)) {
-					$hh = $ii = 0;
+				if (!($hh >= 0 && $hh < 24 && $ii >= 0 && $ii < 59 && $ss >= 0 && $ss <= 59)) {
+					$hh = $ii = $ss = 0;
 				}
 
 				if (checkdate($mm, $dd, $yyyy)) {
-					$value = date(self::W3C_DATETIME_FORMAT, mktime($hh, $ii, 0, $mm, $dd, $yyyy));
+					$value = date(self::W3C_DATETIME_FORMAT, mktime($hh, $ii, $ss, $mm, $dd, $yyyy));
 				} else {
 					$value = NULL;
 				}
