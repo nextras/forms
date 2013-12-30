@@ -271,6 +271,13 @@ trait ComponentControlTrait
 	{
 		return $this->lookup('Nette\Application\UI\Presenter', $need);
 	}
+	
+	protected function attached($presenter)
+	{
+		if ($presenter instanceof Presenter) {
+			$this->params = $presenter->popGlobalParameters($this->getUniqueId());
+		}
+	}
 
 
 	/**
