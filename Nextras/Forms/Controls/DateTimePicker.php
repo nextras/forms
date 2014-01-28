@@ -43,7 +43,7 @@ class DateTimePicker extends DateTimePickerPrototype
 			$ii = isset($matches['ii']) ? $matches['ii'] : 0;
 			$ss = isset($matches['ss']) ? $matches['ss'] : 0;
 
-			if (!($hh >= 0 && $hh < 24 && $ii >= 0 && $ii < 59 && $ss >= 0 && $ss <= 59)) {
+			if (!($hh >= 0 && $hh < 24 && $ii >= 0 && $ii <= 59 && $ss >= 0 && $ss <= 59)) {
 				$hh = $ii = $ss = 0;
 			}
 
