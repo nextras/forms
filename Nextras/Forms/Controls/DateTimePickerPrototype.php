@@ -131,15 +131,15 @@ abstract class DateTimePickerPrototype extends TextBase
 	{
 		$controlMin = $controlMax = NULL;
 		foreach ($rules as $rule) {
-			$branch = isset($rule->branch) ? $rule->branch : $rule->subRules;
+			$branch = property_exists($rule, 'branch') ? $rule->branch : $rule->subRules;
 			if (!$branch) {
-				$validator = isset($rule->validator) ? $rule->validator : $rule->operation;
+				$validator = property_exists($rule, 'validator') ? $rule->validator : $rule->operation;
 				if ($validator === Form::RANGE && !$rule->isNegative) {
 					$ruleMinMax = $rule->arg;
 				}
 
 			} elseif ($branch) {
-				$validator = isset($rule->validator) ? $rule->validator : $rule->operation;
+				$validator = property_exists($rule, 'validator') ? $rule->validator : $rule->operation;
 				if ($validator === Form::FILLED && !$rule->isNegative && $rule->control === $this) {
 					$ruleMinMax = $this->extractRangeRule($branch);
 				}
