@@ -102,7 +102,7 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		}
 
 		$this->controlsInit = TRUE;
-		$this->form->getElementPrototype()->class('form-horizontal');
+		$this->form->getElementPrototype()->addClass('form-horizontal');
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
 				$class = empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default';
