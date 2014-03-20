@@ -106,11 +106,11 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
 				$class = empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default';
-				$control->setAttribute('class', ((array) $control->control->class) + array($class));
+				$control->getControlPrototype()->addClass($class);
 				$usedPrimary = TRUE;
 
 			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
-				$control->setAttribute('class', ((array) $control->control->class) + array('form-control'));
+				$control->getControlPrototype()->addClass('form-control');
 
 			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
 				$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
