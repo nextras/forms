@@ -21,4 +21,4 @@ Nette.getValue = function(elem) {
 
 		return value.length == 0 ? null : value;
 	}
-}
+};
