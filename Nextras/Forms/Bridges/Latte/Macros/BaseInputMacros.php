@@ -45,9 +45,9 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 			($name[0] === '$'
 				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
 				: '$_input = $_form[%0.word];'
-			) . 'if ($_label = $_input->getLabel(%1.raw)) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input)',
+			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input)',
 			$name,
-			($words ? 'NULL, ' : '') . implode(', ', array_map(array($writer, 'formatWord'), $words))
+			$words ? ('getLabelPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')') : 'getLabel()'
 		);
 	}
 
@@ -57,8 +57,8 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 	public function macroLabelEnd(MacroNode $node, PhpWriter $writer)
 	{
 		if ($node->content != NULL) {
-			$node->openingCode = substr_replace($node->openingCode, '->startTag()', strrpos($node->openingCode, ')') + 1, 0);
-			return $writer->write('?></label><?php');
+			$node->openingCode = rtrim($node->openingCode, '?> ') . '->startTag() ?>';
+			return $writer->write('if ($_label) echo $_label->endTag()');
 		}
 	}
 
@@ -78,9 +78,9 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 			($name[0] === '$'
 				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
 				: '$_input = $_form[%0.word];'
-			) . 'echo ' . $class . '::input($_input->getControl(%1.raw)->addAttributes(%node.array), $_input)',
+			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input)',
 			$name,
-			implode(', ', array_map(array($writer, 'formatWord'), $words))
+			$words ? 'getControlPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')' : 'getControl()'
 		);
 	}
 
