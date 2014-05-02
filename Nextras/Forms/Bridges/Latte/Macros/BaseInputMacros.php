@@ -10,18 +10,29 @@
 
 namespace Nextras\Forms\Bridges\Latte\Macros;
 
-use Nette\Latte;
-use Nette\Latte\MacroNode;
-use Nette\Latte\PhpWriter;
+use Latte\CompileException;
+use Latte\Compiler;
+use Latte\MacroNode;
+use Latte\Macros\MacroSet;
+use Latte\PhpWriter;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\BaseControl;
 use Nextras;
 
 
-abstract class BaseInputMacros extends Latte\Macros\MacroSet
+if (!class_exists('Latte\CompileException')) {
+	class_alias('Nette\Latte\CompileException', 'Latte\CompileException');
+	class_alias('Nette\Latte\Compiler', 'Latte\Compiler');
+	class_alias('Nette\Latte\MacroNode', 'Latte\MacroNode');
+	class_alias('Nette\Latte\Macros\MacroSet', 'Latte\Macros\MacroSet');
+	class_alias('Nette\Latte\PhpWriter', 'Latte\PhpWriter');
+}
+
+
+abstract class BaseInputMacros extends MacroSet
 {
 
-	public static function install(Latte\Compiler $compiler)
+	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
 		$me->addMacro('input', array($me, 'macroInput'));
@@ -38,7 +49,7 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 		$class = get_class($this);
 		$words = $node->tokenizer->fetchWords();
 		if (!$words) {
-			throw new Latte\CompileException("Missing name in {{$node->name}}.");
+			throw new CompileException("Missing name in {{$node->name}}.");
 		}
 		$name = array_shift($words);
 		return $writer->write(
@@ -71,7 +82,7 @@ abstract class BaseInputMacros extends Latte\Macros\MacroSet
 		$class = get_class($this);
 		$words = $node->tokenizer->fetchWords();
 		if (!$words) {
-			throw new Latte\CompileException("Missing name in {{$node->name}}.");
+			throw new CompileException("Missing name in {{$node->name}}.");
 		}
 		$name = array_shift($words);
 		return $writer->write(
