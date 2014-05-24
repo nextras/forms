@@ -31,6 +31,6 @@
 		}
 	},
 	"autoload": {
-		"psr-0": { "Nextras\\Forms": "" }
+		"psr-4": { "Nextras\\Forms\\": "src/" }
 	}
 }
