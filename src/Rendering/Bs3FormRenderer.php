@@ -12,6 +12,7 @@ namespace Nextras\Forms\Rendering;
 
 use Nette\Forms\Rendering\DefaultFormRenderer;
 use Nette\Forms\Controls;
+use Nette\Forms\Form;
 use Nette;
 use Nette\Utils\Html;
 
@@ -105,7 +106,7 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		$this->form->getElementPrototype()->addClass('form-horizontal');
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
-				if (empty($usedPrimary) && $control->parent instanceof \Nette\Forms\Form) {
+				if (empty($usedPrimary) && $control->parent instanceof Form) {
 					$class = 'btn btn-primary';
 					$usedPrimary = TRUE;
 				} else {
