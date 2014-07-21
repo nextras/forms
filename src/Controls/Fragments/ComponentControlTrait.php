@@ -134,7 +134,7 @@ trait ComponentControlTrait
 			throw new Nette\InvalidArgumentException("Component name must be integer or string, " . gettype($name) . " given.");
 
 		} else {
-			$a = strpos($name, self::NAME_SEPARATOR);
+			$a = strpos($name, IComponent::NAME_SEPARATOR);
 			if ($a !== FALSE) {
 				$ext = (string) substr($name, $a + 1);
 				$name = substr($name, 0, $a);
