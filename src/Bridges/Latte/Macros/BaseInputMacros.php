@@ -20,15 +20,6 @@ use Nette\Forms\Controls\BaseControl;
 use Nextras;
 
 
-if (!class_exists('Latte\CompileException')) {
-	class_alias('Nette\Latte\CompileException', 'Latte\CompileException');
-	class_alias('Nette\Latte\Compiler', 'Latte\Compiler');
-	class_alias('Nette\Latte\MacroNode', 'Latte\MacroNode');
-	class_alias('Nette\Latte\Macros\MacroSet', 'Latte\Macros\MacroSet');
-	class_alias('Nette\Latte\PhpWriter', 'Latte\PhpWriter');
-}
-
-
 abstract class BaseInputMacros extends MacroSet
 {
 
