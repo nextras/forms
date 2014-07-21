@@ -10,10 +10,6 @@
 
 namespace Nextras\Forms\Bridges\Latte\Macros;
 
-use Nette\Forms\Controls\Button;
-use Nette\Forms\Controls\ImageButton;
-use Nette\Forms\Controls\SelectBox;
-use Nette\Forms\Controls\TextBase;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\BaseControl;
 use Nextras;
