@@ -51,7 +51,7 @@ class DateTimePicker extends DateTimePickerPrototype
 				return NULL;
 			}
 
-			$value = new Nette\DateTime;
+			$value = new Nette\Utils\DateTime;
 			$value->setDate($yyyy, $mm, $dd);
 			$value->setTime($hh, $ii, $ss);
 			return $value;

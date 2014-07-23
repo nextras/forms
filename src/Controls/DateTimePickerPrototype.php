@@ -74,17 +74,17 @@ abstract class DateTimePickerPrototype extends TextBase
 
 
 	/**
-	 * @return Nette\DateTime|NULL
+	 * @return Nette\Utils\DateTime|NULL
 	 */
 	public function getValue()
 	{
 		if ($this->value instanceof DateTime) {
 			// clone
-			return Nette\DateTime::from($this->value);
+			return Nette\Utils\DateTime::from($this->value);
 
 		} elseif (is_int($this->value)) {
 			// timestamp
-			return Nette\DateTime::from($this->value);
+			return Nette\Utils\DateTime::from($this->value);
 
 		} elseif (empty($this->value)) {
 			return NULL;
@@ -102,7 +102,7 @@ abstract class DateTimePickerPrototype extends TextBase
 
 			try {
 				// DateTime constructor throws Exception when invalid input given
-				return Nette\DateTime::from($this->value);
+				return Nette\Utils\DateTime::from($this->value);
 			} catch (\Exception $e) {
 				return NULL;
 			}
