@@ -24,6 +24,9 @@ use Nette\Utils\Html;
  */
 class Bs3FormRenderer extends DefaultFormRenderer
 {
+	/** @var Controls\Button */
+	public $primaryButton = NULL;
+
 	/** @var bool */
 	private $controlsInit = FALSE;
 
@@ -106,7 +109,8 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		$this->form->getElementPrototype()->addClass('form-horizontal');
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
-				if (empty($usedPrimary) && $control->parent instanceof Form) {
+				$markAsPrimary = $control === $this->primaryButton || (!isset($this->primary) && empty($usedPrimary) && $control->parent instanceof Form);
+				if ($markAsPrimary) {
 					$class = 'btn btn-primary';
 					$usedPrimary = TRUE;
 				} else {
