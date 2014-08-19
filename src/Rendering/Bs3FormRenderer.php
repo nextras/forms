@@ -104,6 +104,18 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		if ($this->controlsInit) {
 			return;
 		}
+		
+		if(self::isHorizontal($this)) {
+			$this->wrappers['control']['container'] = 'div class=col-sm-9';
+			$this->wrappers['label']['container'] = 'div class="col-sm-3 control-label"';
+		} elseif(self::isInline($this)) {
+			$this->wrappers['control']['container'] = '';
+			$this->wrappers['label']['container'] = '';
+		} else {
+			$this->wrappers['control']['container'] = 'div';
+			$this->wrappers['label']['container'] = 'div';
+		}
+
 
 		$this->controlsInit = TRUE;
 		$this->form->getElementPrototype()->addClass('form-horizontal');
@@ -120,11 +132,28 @@ class Bs3FormRenderer extends DefaultFormRenderer
 
 			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
 				$control->getControlPrototype()->addClass('form-control');
+				
+				if(self::isInline($this)) {
+					$control->getLabelPrototype()->addClass('sr-only');
+					$control->setAttribute('placeholder', $control->caption);
+				}
 
 			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
 				$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
 			}
 		}
 	}
-
+	
+	private static function isHorizontal(DefaultFormRenderer $renderer) 
+	{
+		$classes = $renderer->form->getElementPrototype()->class;
+		return array_key_exists('form-horizontal', (array) $classes);
+	}
+	
+	private static function isInline(DefaultFormRenderer $renderer) 
+	{
+		$classes = $renderer->form->getElementPrototype()->class;
+		return array_key_exists('form-inline', (array) $classes);
+	}
+	
 }

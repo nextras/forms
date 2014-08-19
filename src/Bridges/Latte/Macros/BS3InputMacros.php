@@ -22,6 +22,16 @@ class BS3InputMacros extends BaseInputMacros
 	{
 		if ($label->getName() === 'label') {
 			$label->addClass('control-label');
+			
+			if(self::isHorizontal($control)) {
+				$label->addClass('col-sm-4');
+			} elseif(self::isInline($control)) {
+				$label->addClass('sr-only');
+			}
+			
+			if($control->isRequired()) {
+				$label->addClass('required');
+			}
 		}
 
 		return $label;
@@ -33,7 +43,22 @@ class BS3InputMacros extends BaseInputMacros
 		$name = $input->getName();
 		if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, array('radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset')))) {
 			$input->addClass('form-control');
-
+			
+			if($control->getOption('help', false) ||  self::isHorizontal($control)) {
+				
+				$wraper = Html::el('div');
+				$wraper->add($input);
+				
+				if(self::isHorizontal($control)) {
+					$wraper->addClass('col-sm-8');
+				}
+				
+				if(($help = $control->getOption('help'))) {
+					$wraper->add(Html::el('span')->setHtml($help)->addClass('help-block'));	
+				}
+				
+				$input = $wraper;
+			}
 		} elseif ($name === 'input' && ($input->type === 'submit' || $input->type === 'reset')) {
 			$input->setName('button');
 			$input->add($input->value);
@@ -41,6 +66,18 @@ class BS3InputMacros extends BaseInputMacros
 		}
 
 		return $input;
+	}
+
+	private static function isHorizontal(BaseControl $control) 
+	{
+		$classes = $control->form->getElementPrototype()->class;
+		return array_key_exists('form-horizontal', (array) $classes);
+	}
+	
+	private static function isInline(BaseControl $control) 
+	{
+		$classes = $control->form->getElementPrototype()->class;
+		return array_key_exists('form-inline', (array) $classes);
 	}
 
 }
