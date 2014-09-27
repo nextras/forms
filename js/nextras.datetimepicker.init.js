@@ -7,7 +7,7 @@
  */
 
 jQuery(function($) {
-	$('.date, .datetime-local').each(function(i, el) {
+	$('input.date, input.datetime-local').each(function(i, el) {
 		el = $(el);
 		el.get(0).type = 'text';
 		el.datetimepicker({
