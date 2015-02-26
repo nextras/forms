@@ -20,8 +20,10 @@ use Nextras\Forms\Controls;
 class FormsExtension extends CompilerExtension
 {
 
-	public function loadConfiguration()
+	public function beforeCompile()
 	{
+		parent::beforeCompile();
+
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('nette.latteFactory')
