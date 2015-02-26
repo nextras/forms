@@ -122,7 +122,11 @@ class Bs3FormRenderer extends DefaultFormRenderer
 				$control->getControlPrototype()->addClass('form-control');
 
 			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
-				$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
+				if ($control->getSeparatorPrototype()->getName() !== NULL) {
+					$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
+				} else {
+					$control->getItemLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');
+				}
 			}
 		}
 	}
