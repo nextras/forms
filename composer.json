@@ -19,7 +19,7 @@
 		}
 	],
 	"require": {
-		"php": "~5.4",
+		"php": ">=5.4",
 		"nette/application": "~2.2",
 		"nette/component-model": "~2.2",
 		"nette/forms": "~2.2",
