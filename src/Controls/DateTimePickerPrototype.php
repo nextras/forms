@@ -123,6 +123,25 @@ abstract class DateTimePickerPrototype extends TextBase
 
 
 	/**
+	 * @return string
+	 */
+	public function getHtmlFormat()
+	{
+		return $this->htmlFormat;
+	}
+
+
+	/**
+	 * Sets HTML format
+	 * @param string
+	 */
+	public function setHtmlFormat($format)
+	{
+		$this->htmlFormat = $format;
+	}
+
+
+	/**
 	 * Finds minimum and maximum allowed dates.
 	 *
 	 * @return array 0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
