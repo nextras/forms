@@ -46,10 +46,9 @@ Container::extensionMethod('addTypeahead', function(Container $container, $name,
 
 Register your Bootstrap 3 macros in `config.neon`:
 ```neon
-nette:
-	latte:
-		macros:
-			- Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros
+latte:
+	macros:
+		- Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros
 ```
 
 Render IListControls as you wish:
