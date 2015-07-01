@@ -25,6 +25,10 @@
 		"nette/forms": "~2.2",
 		"nette/utils": "~2.2"
 	},
+	"require-dev": {
+		"latte/latte": "~2.2",
+		"nette/tester": "~1.4"
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "1.5-dev"
