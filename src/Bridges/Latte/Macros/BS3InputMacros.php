@@ -18,9 +18,9 @@ use Nextras;
 class BS3InputMacros extends BaseInputMacros
 {
 
-	public static function label(Html $label, BaseControl $control)
+	public static function label(Html $label, BaseControl $control, $isPart)
 	{
-		if ($label->getName() === 'label') {
+		if ($label->getName() === 'label' && !$isPart) {
 			$label->addClass('control-label');
 		}
 
