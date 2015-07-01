@@ -47,9 +47,10 @@ abstract class BaseInputMacros extends MacroSet
 			($name[0] === '$'
 				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
 				: '$_input = $_form[%0.word];'
-			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input)',
+			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input, %2.var)',
 			$name,
-			$words ? ('getLabelPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')') : 'getLabel()'
+			$words ? ('getLabelPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')') : 'getLabel()',
+			(bool) $words
 		);
 	}
 
@@ -80,20 +81,21 @@ abstract class BaseInputMacros extends MacroSet
 			($name[0] === '$'
 				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
 				: '$_input = $_form[%0.word];'
-			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input)',
+			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input, %2.var)',
 			$name,
-			$words ? 'getControlPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')' : 'getControl()'
+			$words ? 'getControlPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')' : 'getControl()',
+			(bool) $words
 		);
 	}
 
 
-	public static function label(Html $label, BaseControl $control)
+	public static function label(Html $label, BaseControl $control, $isPart)
 	{
 		return $label;
 	}
 
 
-	public static function input(Html $input, BaseControl $control)
+	public static function input(Html $input, BaseControl $control, $isPart)
 	{
 		return $input;
 	}

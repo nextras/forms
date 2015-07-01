@@ -28,7 +28,7 @@ class BS3InputMacros extends BaseInputMacros
 	}
 
 
-	public static function input(Html $input, BaseControl $control)
+	public static function input(Html $input, BaseControl $control, $isPart)
 	{
 		$name = $input->getName();
 		if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, array('radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset')))) {
