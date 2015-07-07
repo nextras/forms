@@ -1,4 +1,11 @@
-## Nextras\Forms
+Nextras\Forms
+=============
+
+[![Build Status](https://travis-ci.org/nextras/forms.svg?branch=master)](https://travis-ci.org/nextras/forms)
+[![Downloads this Month](https://img.shields.io/packagist/dm/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
+[![Stable version](http://img.shields.io/packagist/v/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
+[![Code coverage](https://img.shields.io/coveralls/nextras/forms.svg?style=flat)](https://coveralls.io/r/nextras/forms)
+[![HHVM Status](http://img.shields.io/hhvm/nextras/forms.svg?style=flat)](http://hhvm.h4cc.de/package/nextras/forms)
 
 List of components:
 - **OptionList** - option control rendered as radio list
@@ -8,7 +15,7 @@ List of components:
 - **Tyheahead** - the best autocomplete for your forms
 - **BS3InputMacros** - input macros for Bootstrap 3 (adds some css classes)
 
-## Installation
+### Installation
 
 The best way to install is using [Composer](http://getcomposer.org/):
 
@@ -19,7 +26,7 @@ $ composer require nextras/forms
 For Date(Time)Picker we recommend use [DateTime Picker](http://www.malot.fr/bootstrap-datetimepicker/) for Bootstrap.
 See JS init script.
 
-## Documentation
+### Documentation
 
 Initialization in your `bootstrap.php`:
 
