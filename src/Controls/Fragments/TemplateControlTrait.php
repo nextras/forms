@@ -84,8 +84,9 @@ trait TemplateControlTrait
 	 */
 	public function toString()
 	{
+		$template = $this->getTemplate();
 		$this->beforeRender();
-		return (string) $this->getTemplate();
+		return (string) $template;
 	}
 
 
