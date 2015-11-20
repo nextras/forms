@@ -31,7 +31,7 @@ class DateTimePicker extends DateTimePickerPrototype
 	protected function getDefaultParser()
 	{
 		return function($value) {
-			if (!preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ -@] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2})(?:[:.](?P<ss>\d{1,2}))?)?$#', $value, $matches)) {
+			if (!preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ @-] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2})(?:[:.](?P<ss>\d{1,2}))?)?$#', $value, $matches)) {
 				return NULL;
 			}
 
