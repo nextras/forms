@@ -39,6 +39,8 @@ class Bs3FormRenderer extends DefaultFormRenderer
 		$this->wrappers['label']['container'] = 'div class="col-sm-3 control-label"';
 		$this->wrappers['control']['description'] = 'span class=help-block';
 		$this->wrappers['control']['errorcontainer'] = 'span class=help-block';
+		$this->wrappers['error']['container'] = null;
+		$this->wrappers['error']['item'] = 'div class="alert alert-danger"';
 	}
 
 
