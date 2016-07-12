@@ -36,7 +36,7 @@ class BS3InputMacros extends BaseInputMacros
 
 		} elseif ($name === 'input' && ($input->type === 'submit' || $input->type === 'reset')) {
 			$input->setName('button');
-			$input->add($input->value);
+			$input->addHtml($input->value);
 			$input->addClass('btn');
 		}
 
