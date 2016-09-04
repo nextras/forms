@@ -27,7 +27,7 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	protected $callback;
 
 
-	public function __construct($caption = NULL, $callback = NULL)
+	public function __construct($caption = null, $callback = null)
 	{
 		parent::__construct($caption);
 		$this->setCallback($callback);
@@ -66,5 +66,4 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 			$this->control->{'data-typeahead-url'} = $this->link('autocomplete!', ['q' => '__QUERY_PLACEHOLDER__']);
 		}
 	}
-
 }

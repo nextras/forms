@@ -29,7 +29,7 @@ class DateTimePicker extends DateTimePickerPrototype
 	{
 		return function($value) {
 			if (!preg_match('#^(?P<dd>\d{1,2})[. -] *(?P<mm>\d{1,2})(?:[. -] *(?P<yyyy>\d{4})?)?(?: *[ @-] *(?P<hh>\d{1,2})[:.](?P<ii>\d{1,2})(?:[:.](?P<ss>\d{1,2}))?)?$#', $value, $matches)) {
-				return NULL;
+				return null;
 			}
 
 			$dd = $matches['dd'];
@@ -45,7 +45,7 @@ class DateTimePicker extends DateTimePickerPrototype
 			}
 
 			if (!checkdate($mm, $dd, $yyyy)) {
-				return NULL;
+				return null;
 			}
 
 			$value = new Nette\Utils\DateTime;
@@ -54,5 +54,4 @@ class DateTimePicker extends DateTimePickerPrototype
 			return $value;
 		};
 	}
-
 }

@@ -16,7 +16,6 @@ use Nextras;
 
 class BS3InputMacros extends BaseInputMacros
 {
-
 	public static function label(Html $label, BaseControl $control, $isPart)
 	{
 		if ($label->getName() === 'label' && !$isPart) {
@@ -30,7 +29,7 @@ class BS3InputMacros extends BaseInputMacros
 	public static function input(Html $input, BaseControl $control, $isPart)
 	{
 		$name = $input->getName();
-		if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, array('radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset')))) {
+		if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, ['radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset']))) {
 			$input->addClass('form-control');
 
 		} elseif ($name === 'input' && ($input->type === 'submit' || $input->type === 'reset')) {
@@ -41,5 +40,4 @@ class BS3InputMacros extends BaseInputMacros
 
 		return $input;
 	}
-
 }

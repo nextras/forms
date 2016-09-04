@@ -48,7 +48,7 @@ abstract class DateTimePickerPrototype extends TextBase
 		$control = parent::getControl();
 		$control->type = $this->htmlType;
 		$control->addClass($this->htmlType);
-		$control->{'data-nette-rules'} = NULL;
+		$control->{'data-nette-rules'} = null;
 
 		list($min, $max) = $this->extractRangeRule($this->getRules());
 		if ($min instanceof DateTime) {
@@ -73,7 +73,7 @@ abstract class DateTimePickerPrototype extends TextBase
 
 
 	/**
-	 * @return Nette\Utils\DateTime|NULL
+	 * @return Nette\Utils\DateTime|null
 	 */
 	public function getValue()
 	{
@@ -86,7 +86,7 @@ abstract class DateTimePickerPrototype extends TextBase
 			return Nette\Utils\DateTime::from($this->value);
 
 		} elseif (empty($this->value)) {
-			return NULL;
+			return null;
 
 		} elseif (is_string($this->value)) {
 			$parsers = $this->parsers;
@@ -103,11 +103,11 @@ abstract class DateTimePickerPrototype extends TextBase
 				// DateTime constructor throws Exception when invalid input given
 				return Nette\Utils\DateTime::from($this->value);
 			} catch (\Exception $e) {
-				return NULL;
+				return null;
 			}
 		}
 
-		return NULL;
+		return null;
 	}
 
 
@@ -124,11 +124,11 @@ abstract class DateTimePickerPrototype extends TextBase
 	/**
 	 * Finds minimum and maximum allowed dates.
 	 *
-	 * @return array 0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
+	 * @return array 0 => DateTime|null $minDate, 1 => DateTime|null $maxDate
 	 */
 	protected function extractRangeRule(Rules $rules)
 	{
-		$controlMin = $controlMax = NULL;
+		$controlMin = $controlMax = null;
 		foreach ($rules as $rule) {
 			$branch = property_exists($rule, 'branch') ? $rule->branch : $rule->subRules;
 			if (!$branch) {
@@ -146,16 +146,15 @@ abstract class DateTimePickerPrototype extends TextBase
 
 			if (isset($ruleMinMax)) {
 				list($ruleMin, $ruleMax) = $ruleMinMax;
-				if ($ruleMin !== NULL && ($controlMin === NULL || $ruleMin > $controlMin)) {
+				if ($ruleMin !== null && ($controlMin === null || $ruleMin > $controlMin)) {
 					$controlMin = $ruleMin;
 				}
-				if ($ruleMax !== NULL && ($controlMax === NULL || $ruleMax < $controlMax)) {
+				if ($ruleMax !== null && ($controlMax === null || $ruleMax < $controlMax)) {
 					$controlMax = $ruleMax;
 				}
-				$ruleMinMax = NULL;
+				$ruleMinMax = null;
 			}
 		}
 		return array($controlMin, $controlMax);
 	}
-
 }

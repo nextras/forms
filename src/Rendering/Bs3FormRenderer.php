@@ -21,15 +21,15 @@ use Nette;
 class Bs3FormRenderer extends DefaultFormRenderer
 {
 	/** @var Controls\Button */
-	public $primaryButton = NULL;
+	public $primaryButton = null;
 
 	/** @var bool */
-	private $controlsInit = FALSE;
+	private $controlsInit = false;
 
 
 	public function __construct()
 	{
-		$this->wrappers['controls']['container'] = NULL;
+		$this->wrappers['controls']['container'] = null;
 		$this->wrappers['pair']['container'] = 'div class=form-group';
 		$this->wrappers['pair']['.error'] = 'has-error';
 		$this->wrappers['control']['container'] = 'div class=col-sm-9';
@@ -103,14 +103,14 @@ class Bs3FormRenderer extends DefaultFormRenderer
 			return;
 		}
 
-		$this->controlsInit = TRUE;
+		$this->controlsInit = true;
 		$this->form->getElementPrototype()->addClass('form-horizontal');
 		foreach ($this->form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
 				$markAsPrimary = $control === $this->primaryButton || (!isset($this->primaryButton) && empty($usedPrimary) && $control->parent instanceof Form);
 				if ($markAsPrimary) {
 					$class = 'btn btn-primary';
-					$usedPrimary = TRUE;
+					$usedPrimary = true;
 				} else {
 					$class = 'btn btn-default';
 				}
@@ -120,7 +120,7 @@ class Bs3FormRenderer extends DefaultFormRenderer
 				$control->getControlPrototype()->addClass('form-control');
 
 			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
-				if ($control->getSeparatorPrototype()->getName() !== NULL) {
+				if ($control->getSeparatorPrototype()->getName() !== null) {
 					$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
 				} else {
 					$control->getItemLabelPrototype()->addClass($control->getControlPrototype()->type . '-inline');
@@ -128,5 +128,4 @@ class Bs3FormRenderer extends DefaultFormRenderer
 			}
 		}
 	}
-
 }

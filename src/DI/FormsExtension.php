@@ -26,7 +26,7 @@ class FormsExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('nette.latteFactory')
-			->addSetup('Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros::install(?->getCompiler())', array('@self'));
+			->addSetup('Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros::install(?->getCompiler())', ['@self']);
 	}
 
 
@@ -39,15 +39,14 @@ class FormsExtension extends CompilerExtension
 
 	public static function registerControls()
 	{
-		Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
+		Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = null) {
 			return $container[$name] = new Controls\DatePicker($label);
 		});
-		Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = NULL) {
+		Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = null) {
 			return $container[$name] = new Controls\DateTimePicker($label);
 		});
-		Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = NULL, $callback = NULL) {
+		Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = null, $callback = null) {
 			return $container[$name] = new Controls\Typeahead($label, $callback);
 		});
 	}
-
 }

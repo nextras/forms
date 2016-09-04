@@ -25,8 +25,8 @@ abstract class BaseInputMacros extends MacroSet
 	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
-		$me->addMacro('input', array($me, 'macroInput'));
-		$me->addMacro('label', array($me, 'macroLabel'), array($me, 'macroLabelEnd'));
+		$me->addMacro('input', [$me, 'macroInput']);
+		$me->addMacro('label', [$me, 'macroLabel'], [$me, 'macroLabelEnd']);
 		return $me;
 	}
 
@@ -48,17 +48,18 @@ abstract class BaseInputMacros extends MacroSet
 				: '$_input = $_form[%0.word];'
 			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input, %2.var)',
 			$name,
-			$words ? ('getLabelPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')') : 'getLabel()',
+			$words ? ('getLabelPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')') : 'getLabel()',
 			(bool) $words
 		);
 	}
+
 
 	/**
 	 * {/label}
 	 */
 	public function macroLabelEnd(MacroNode $node, PhpWriter $writer)
 	{
-		if ($node->content != NULL) {
+		if ($node->content != null) {
 			$node->openingCode = rtrim($node->openingCode, '?> ') . '->startTag() ?>';
 			return $writer->write('if ($_label) echo $_label->endTag()');
 		}
@@ -82,7 +83,7 @@ abstract class BaseInputMacros extends MacroSet
 				: '$_input = $_form[%0.word];'
 			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input, %2.var)',
 			$name,
-			$words ? 'getControlPart(' . implode(', ', array_map(array($writer, 'formatWord'), $words)) . ')' : 'getControl()',
+			$words ? 'getControlPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')' : 'getControl()',
 			(bool) $words
 		);
 	}
@@ -98,5 +99,4 @@ abstract class BaseInputMacros extends MacroSet
 	{
 		return $input;
 	}
-
 }

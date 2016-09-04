@@ -24,10 +24,9 @@ abstract class ComponentControl extends BaseControl implements ISignalReceiver, 
 	use TemplateControlTrait;
 
 
-	public function __construct($caption = NULL)
+	public function __construct($caption = null)
 	{
 		parent::__construct($caption);
 		$this->control = Nette\Utils\Html::el('div');
 	}
-
 }
