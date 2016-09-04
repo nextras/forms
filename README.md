@@ -25,26 +25,9 @@ See JS init script.
 
 ### Documentation
 
-Initialization in your `bootstrap.php`:
+Add in your `config.neon`:
 
 ```php
-use Nette\Forms\Container;
-use Nextras\Forms\Controls;
-
-Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
-	return $container[$name] = new Controls\DatePicker($label);
-});
-Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = NULL) {
-	return $container[$name] = new Controls\DateTimePicker($label);
-});
-Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = NULL, $callback = NULL) {
-	return $container[$name] = new Controls\Typeahead($label, $callback);
-});
-```
-
-Register your Bootstrap 3 macros in `config.neon`:
-```neon
-latte:
-	macros:
-		- Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros
+extensions:
+    nextras.form: Nextras\Forms\Bridges\NetteDI\FormsExtension
 ```
