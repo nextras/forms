@@ -14,8 +14,8 @@ namespace Nextras\Forms\Controls\Fragments;
 
 use Nette;
 use Nette\Application\UI\BadSignalException;
+use Nette\Application\UI\ComponentReflection;
 use Nette\Application\UI\InvalidLinkException;
-use Nette\Application\UI\PresenterComponentReflection;
 use Nette\Application\UI\Presenter;
 use Nette\ComponentModel\IComponent;
 use Nette\ComponentModel\IContainer;
@@ -28,12 +28,18 @@ use Nette\ComponentModel\RecursiveComponentIterator;
  */
 trait ComponentControlTrait
 {
+	/** @var \ReflectionMethod */
+	private $_createRequestMethodReflection;
+
+	/** @var \ReflectionMethod */
+	private $_handleInvalidLinkMethodReflection;
+
 
 	/**** ComponentModel\Container ************************************************************************************/
 
 
 	/** @var IComponent[] */
-	private $components = array();
+	private $components = [];
 
 	/** @var IComponent|NULL */
 	private $cloning;
@@ -60,7 +66,7 @@ trait ComponentControlTrait
 			$name = (string) $name;
 
 		} elseif (!is_string($name)) {
-			throw new Nette\InvalidArgumentException("Component name must be integer or string, " . gettype($name) . " given.");
+			throw new Nette\InvalidArgumentException(sprintf('Component name must be integer or string, %s given.', gettype($name)));
 
 		} elseif (!preg_match('#^[a-zA-Z0-9_]+\z#', $name)) {
 			throw new Nette\InvalidArgumentException("Component name must be non-empty alphanumeric string, '$name' given.");
@@ -84,7 +90,7 @@ trait ComponentControlTrait
 
 		try {
 			if (isset($this->components[$insertBefore])) {
-				$tmp = array();
+				$tmp = [];
 				foreach ($this->components as $k => $v) {
 					if ($k === $insertBefore) {
 						$tmp[$name] = $component;
@@ -127,16 +133,20 @@ trait ComponentControlTrait
 	 * @param  bool   throw exception if component doesn't exist?
 	 * @return IComponent|NULL
 	 */
-	final public function getComponent($name, $need = TRUE)
+	public function getComponent($name, $need = TRUE)
 	{
+		if (isset($this->components[$name])) {
+			return $this->components[$name];
+		}
+
 		if (is_int($name)) {
 			$name = (string) $name;
 
 		} elseif (!is_string($name)) {
-			throw new Nette\InvalidArgumentException("Component name must be integer or string, " . gettype($name) . " given.");
+			throw new Nette\InvalidArgumentException(sprintf('Component name must be integer or string, %s given.', gettype($name)));
 
 		} else {
-			$a = strpos($name, IComponent::NAME_SEPARATOR);
+			$a = strpos($name, self::NAME_SEPARATOR);
 			if ($a !== FALSE) {
 				$ext = (string) substr($name, $a + 1);
 				$name = substr($name, 0, $a);
@@ -144,7 +154,7 @@ trait ComponentControlTrait
 
 			if ($name === '') {
 				if ($need) {
-					throw new Nette\InvalidArgumentException("Component or subcomponent name must not be empty string.");
+					throw new Nette\InvalidArgumentException('Component or subcomponent name must not be empty string.');
 				}
 				return;
 			}
@@ -152,8 +162,13 @@ trait ComponentControlTrait
 
 		if (!isset($this->components[$name])) {
 			$component = $this->createComponent($name);
-			if ($component instanceof IComponent && $component->getParent() === NULL) {
-				$this->addComponent($component, $name);
+			if ($component) {
+				if (!$component instanceof IComponent) {
+					throw new Nette\UnexpectedValueException('Method createComponent() did not return Nette\ComponentModel\IComponent.');
+
+				} elseif (!isset($this->components[$name])) {
+					$this->addComponent($component, $name);
+				}
 			}
 		}
 
@@ -169,7 +184,11 @@ trait ComponentControlTrait
 			}
 
 		} elseif ($need) {
-			throw new Nette\InvalidArgumentException("Component with name '$name' does not exist.");
+			$hint = Nette\Utils\ObjectMixin::getSuggestion(array_merge(
+				array_keys($this->components),
+				array_map('lcfirst', preg_filter('#^createComponent([A-Z0-9].*)#', '$1', get_class_methods($this)))
+			), $name);
+			throw new Nette\InvalidArgumentException("Component with name '$name' does not exist" . ($hint ? ", did you mean '$hint'?" : '.'));
 		}
 	}
 
@@ -183,7 +202,7 @@ trait ComponentControlTrait
 	{
 		$ucname = ucfirst($name);
 		$method = 'createComponent' . $ucname;
-		if ($ucname !== $name && method_exists($this, $method) && $this->getReflection()->getMethod($method)->getName() === $method) {
+		if ($ucname !== $name && method_exists($this, $method) && (new \ReflectionMethod($this, $method))->getName() === $method) {
 			$component = $this->$method($name);
 			if (!$component instanceof IComponent && !isset($this->components[$name])) {
 				$class = get_class($this);
@@ -195,12 +214,12 @@ trait ComponentControlTrait
 
 
 	/**
-	 * Iterates over a components.
+	 * Iterates over components.
 	 * @param  bool    recursive?
 	 * @param  string  class types filter
 	 * @return \ArrayIterator
 	 */
-	final public function getComponents($deep = FALSE, $filterType = NULL)
+	public function getComponents($deep = FALSE, $filterType = NULL)
 	{
 		$iterator = new RecursiveComponentIterator($this->components);
 		if ($deep) {
@@ -208,7 +227,7 @@ trait ComponentControlTrait
 			$iterator = new \RecursiveIteratorIterator($iterator, $deep);
 		}
 		if ($filterType) {
-			$iterator = new Nette\Iterators\Filter($iterator, function($item) use ($filterType) {
+			$iterator = new \CallbackFilterIterator($iterator, function ($item) use ($filterType) {
 				return $item instanceof $filterType;
 			});
 		}
@@ -257,11 +276,14 @@ trait ComponentControlTrait
 	}
 
 
-	/**** Application\UI\PresenterComponent ****************************************************************************/
+	/**** Application\UI\Component ************************************************************************************/
 
+
+	/** @var callable[]  function (self $sender); Occurs when component is attached to presenter */
+	public $onAnchor;
 
 	/** @var array */
-	protected $params = array();
+	protected $params = [];
 
 
 	/**
@@ -271,7 +293,7 @@ trait ComponentControlTrait
 	 */
 	public function getPresenter($need = TRUE)
 	{
-		return $this->lookup('Nette\Application\UI\Presenter', $need);
+		return $this->lookup(Presenter::class, $need);
 	}
 
 
@@ -282,7 +304,7 @@ trait ComponentControlTrait
 	 */
 	public function getUniqueId()
 	{
-		return $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
+		return $this->lookupPath(Presenter::class, TRUE);
 	}
 
 
@@ -295,7 +317,8 @@ trait ComponentControlTrait
 	protected function attached($presenter)
 	{
 		if ($presenter instanceof Presenter) {
-			$this->params = $presenter->popGlobalParameters($this->getUniqueId());
+			$this->loadState($presenter->popGlobalParameters($this->getUniqueId()));
+			$this->onAnchor($this);
 		}
 	}
 
@@ -306,8 +329,7 @@ trait ComponentControlTrait
 	protected function validateParent(Nette\ComponentModel\IContainer $parent)
 	{
 		parent::validateParent($parent);
-		$this->monitor('Nette\Forms\Form');
-		$this->monitor('Nette\Application\UI\Presenter');
+		$this->monitor(Presenter::class);
 	}
 
 
@@ -343,11 +365,150 @@ trait ComponentControlTrait
 
 	/**
 	 * Access to reflection.
-	 * @return PresenterComponentReflection
+	 * @return ComponentReflection
 	 */
 	public static function getReflection()
 	{
-		return new PresenterComponentReflection(get_called_class());
+		return new ComponentReflection(get_called_class());
+	}
+
+
+	/********************* interface IStatePersistent ****************d*g**/
+
+
+	/**
+	 * Loads state informations.
+	 * @param  array
+	 * @return void
+	 */
+	public function loadState(array $params)
+	{
+		$reflection = $this->getReflection();
+		foreach ($reflection->getPersistentParams() as $name => $meta) {
+			if (isset($params[$name])) { // NULLs are ignored
+				$type = gettype($meta['def']);
+				if (!$reflection->convertType($params[$name], $type)) {
+					throw new Nette\Application\BadRequestException(sprintf(
+						"Value passed to persistent parameter '%s' in %s must be %s, %s given.",
+						$name,
+						$this instanceof Presenter ? 'presenter ' . $this->getName() : "component '{$this->getUniqueId()}'",
+						$type === 'NULL' ? 'scalar' : $type,
+						is_object($params[$name]) ? get_class($params[$name]) : gettype($params[$name])
+					));
+				}
+				$this->$name = $params[$name];
+			} else {
+				$params[$name] = $this->$name;
+			}
+		}
+		$this->params = $params;
+	}
+
+
+	/**
+	 * Saves state informations for next request.
+	 * @param  array
+	 * @param  ComponentReflection (internal, used by Presenter)
+	 * @return void
+	 */
+	public function saveState(array & $params, $reflection = NULL)
+	{
+		$reflection = $reflection === NULL ? $this->getReflection() : $reflection;
+		foreach ($reflection->getPersistentParams() as $name => $meta) {
+
+			if (isset($params[$name])) {
+				// injected value
+
+			} elseif (array_key_exists($name, $params)) { // NULLs are skipped
+				continue;
+
+			} elseif ((!isset($meta['since']) || $this instanceof $meta['since']) && isset($this->$name)) {
+				$params[$name] = $this->$name; // object property value
+
+			} else {
+				continue; // ignored parameter
+			}
+
+			$type = gettype($meta['def']);
+			if (!ComponentReflection::convertType($params[$name], $type)) {
+				throw new InvalidLinkException(sprintf(
+					"Value passed to persistent parameter '%s' in %s must be %s, %s given.",
+					$name,
+					$this instanceof Presenter ? 'presenter ' . $this->getName() : "component '{$this->getUniqueId()}'",
+					$type === 'NULL' ? 'scalar' : $type,
+					is_object($params[$name]) ? get_class($params[$name]) : gettype($params[$name])
+				));
+			}
+
+			if ($params[$name] === $meta['def'] || ($meta['def'] === NULL && $params[$name] === '')) {
+				$params[$name] = NULL; // value transmit is unnecessary
+			}
+		}
+	}
+
+
+	/**
+	 * Returns component param.
+	 * @param  string key
+	 * @param  mixed  default value
+	 * @return mixed
+	 */
+	public function getParameter($name, $default = NULL)
+	{
+		if (isset($this->params[$name])) {
+			return $this->params[$name];
+
+		} else {
+			return $default;
+		}
+	}
+
+
+	/**
+	 * Returns component parameters.
+	 * @return array
+	 */
+	public function getParameters()
+	{
+		return $this->params;
+	}
+
+
+	/**
+	 * Returns a fully-qualified name that uniquely identifies the parameter.
+	 * @param  string
+	 * @return string
+	 */
+	public function getParameterId($name)
+	{
+		$uid = $this->getUniqueId();
+		return $uid === '' ? $name : $uid . self::NAME_SEPARATOR . $name;
+	}
+
+
+	/** @deprecated */
+	function getParam($name = NULL, $default = NULL)
+	{
+		//trigger_error(__METHOD__ . '() is deprecated; use getParameter() instead.', E_USER_DEPRECATED);
+		return func_num_args() ? $this->getParameter($name, $default) : $this->getParameters();
+	}
+
+
+	/**
+	 * Returns array of classes persistent parameters. They have public visibility and are non-static.
+	 * This default implementation detects persistent parameters by annotation @persistent.
+	 * @return array
+	 */
+	public static function getPersistentParams()
+	{
+		$rc = new \ReflectionClass(get_called_class());
+		$params = [];
+		foreach ($rc->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
+			if (!$rp->isStatic() && ComponentReflection::parseAnnotation($rp, 'persistent')) {
+				$params[] = $rp->getName();
+			}
+		}
+		return $params;
 	}
 
 
@@ -374,7 +535,7 @@ trait ComponentControlTrait
 	 * @param  string
 	 * @return string
 	 */
-	public function formatSignalMethod($signal)
+	public static function formatSignalMethod($signal)
 	{
 		return $signal == NULL ? NULL : 'handle' . $signal; // intentionally ==
 	}
@@ -385,29 +546,29 @@ trait ComponentControlTrait
 
 	/**
 	 * Generates URL to presenter, action or signal.
-	 * @param  string   destination in format "[[module:]presenter:]action" or "signal!" or "this"
+	 * @param  string   destination in format "[//] [[[module:]presenter:]action | signal! | this] [#fragment]"
 	 * @param  array|mixed
 	 * @return string
 	 * @throws InvalidLinkException
 	 */
-	public function link($destination, $args = array())
+	public function link($destination, $args = [])
 	{
-		$args = is_array($args) ? $args : array_slice(func_get_args(), 1);
-		if (!(isset($destination[0]) && $destination[0] === ':')) {
-			$path = $this->lookupPath('Nette\Application\UI\Presenter', TRUE);
-			$a = strpos($destination, '//');
-			if ($a !== FALSE) {
-				$destination = substr($destination, 0, $a + 2) . $path . '-' . substr($destination, $a + 2);
-			} else {
-				$destination = $path . '-' . $destination;
-			}
-			$newArgs = [];
-			foreach ($args as $key => $arg) {
-				$newArgs[$path . '-' . $key] = $arg;
-			}
-			$args = $newArgs;
+		// edit start
+		if (!$this->_createRequestMethodReflection) {
+			$this->_createRequestMethodReflection = new \ReflectionMethod(Presenter::class, 'createRequest');
+			$this->_createRequestMethodReflection->setAccessible(true);
+			$this->_handleInvalidLinkMethodReflection = new \ReflectionMethod(Presenter::class, 'handleInvalidLink');
+			$this->_handleInvalidLinkMethodReflection->setAccessible(true);
 		}
-		return $this->getPresenter()->link($destination, $args);
+
+		try {
+			$args = func_num_args() < 3 && is_array($args) ? $args : array_slice(func_get_args(), 1);
+			return $this->_createRequestMethodReflection->invoke($this->getPresenter(), $this, $destination, $args, 'link');
+
+		} catch (InvalidLinkException $e) {
+			$this->_handleInvalidLinkMethodReflection->invoke($e);
+		}
+		// edit end
 	}
 
 
@@ -420,7 +581,7 @@ trait ComponentControlTrait
 	 * @param  Nette\ComponentModel\IComponent
 	 * @return void
 	 */
-	final public function offsetSet($name, $component)
+	public function offsetSet($name, $component)
 	{
 		$this->addComponent($component, $name);
 	}
@@ -432,7 +593,7 @@ trait ComponentControlTrait
 	 * @return Nette\ComponentModel\IComponent
 	 * @throws Nette\InvalidArgumentException
 	 */
-	final public function offsetGet($name)
+	public function offsetGet($name)
 	{
 		return $this->getComponent($name, TRUE);
 	}
@@ -443,7 +604,7 @@ trait ComponentControlTrait
 	 * @param  string  component name
 	 * @return bool
 	 */
-	final public function offsetExists($name)
+	public function offsetExists($name)
 	{
 		return $this->getComponent($name, FALSE) !== NULL;
 	}
@@ -454,7 +615,7 @@ trait ComponentControlTrait
 	 * @param  string  component name
 	 * @return void
 	 */
-	final public function offsetUnset($name)
+	public function offsetUnset($name)
 	{
 		$component = $this->getComponent($name, FALSE);
 		if ($component !== NULL) {

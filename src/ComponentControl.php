@@ -10,6 +10,7 @@
 namespace Nextras\Forms;
 
 use Nette;
+use Nette\Application\UI\IRenderable;
 use Nette\Application\UI\ISignalReceiver;
 use Nette\ComponentModel\IContainer;
 use Nette\Forms\Controls\BaseControl;
@@ -19,7 +20,7 @@ use Nextras\Forms\Controls\Fragments\TemplateControlTrait;
 /**
  * Base form control with Nette Component model support.
  */
-abstract class ComponentControl extends BaseControl implements ISignalReceiver, \ArrayAccess, IContainer
+abstract class ComponentControl extends BaseControl implements ISignalReceiver, \ArrayAccess, IContainer, IRenderable
 {
 	use TemplateControlTrait;
 

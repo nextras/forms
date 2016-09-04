@@ -18,6 +18,7 @@ use Nette\Application\UI\ITemplate;
 use Nette\Application\UI\ITemplateFactory;
 use Nette\Application\UI\Presenter;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nextras\Forms\Bridges\Latte\SnippetBridge;
 
 
 /**
@@ -95,6 +96,9 @@ trait TemplateControlTrait
 	/**** Application\UI\Control **************************************************************************************/
 
 
+	/** @var ITemplateFactory */
+	private $templateFactory;
+
 	/** @var ITemplate */
 	private $template;
 
@@ -108,46 +112,57 @@ trait TemplateControlTrait
 	/********************* template factory ****************d*g**/
 
 
+	public function setTemplateFactory(ITemplateFactory $templateFactory)
+	{
+		$this->templateFactory = $templateFactory;
+	}
+
+
 	/**
 	 * @return ITemplate
 	 */
-	final public function getTemplate()
+	public function getTemplate()
 	{
 		if ($this->template === NULL) {
 			$value = $this->createTemplate();
 			if (!$value instanceof ITemplate && $value !== NULL) {
-				$class2 = get_class($value);
-				$class = get_class($this);
+				$class2 = get_class($value); $class = get_class($this);
 				throw new Nette\UnexpectedValueException("Object returned by $class::createTemplate() must be instance of Nette\\Application\\UI\\ITemplate, '$class2' given.");
 			}
 			$this->template = $value;
-			$this->template->form = $this->template->_form = $this;
-			$this->template->setFile($this->templateFile ?: dirname($this->reflection->getFileName()) . '/' . $this->reflection->getShortName() . '.latte');
 		}
 		return $this->template;
 	}
 
 
 	/**
-	 * @param  string|NULL
 	 * @return ITemplate
 	 */
-	protected function createTemplate($class = NULL)
+	protected function createTemplate()
 	{
-		$template = $this->getPresenter()->getTemplateFactory()->createTemplate($this->getPresenter());
-		$template->control = $template->_control = $this;
-		$template->flashes = [];
+		$templateFactory = $this->templateFactory ?: $this->getPresenter()->getTemplateFactory();
+		// edit start
+		$template = $templateFactory->createTemplate(null);
+		$template->control = $this;
 
 		if ($template instanceof Template) {
+			$presenter = $this->getPresenter(false);
 			$latte = $template->getLatte();
-			if ($latte->onCompile instanceof \Traversable) {
-				$latte->onCompile = iterator_to_array($latte->onCompile);
-			}
-
+			$latte->addProvider('uiControl', $this);
+			$latte->addProvider('uiPresenter', $presenter);
+			$latte->addProvider('snippetBridge', new SnippetBridge($this));
 			$this->templatePrepareFilters($template);
 		}
 
+		if ($this->templateFile) {
+			$template->setFile($this->templateFile);
+		} else {
+			$reflection = new \ReflectionClass(get_called_class());
+			$template->setFile(dirname($reflection->getFileName()) . '/' . $reflection->getShortName() . '.latte');
+		}
+
 		return $template;
+		// edit end
 	}
 
 
@@ -166,28 +181,34 @@ trait TemplateControlTrait
 
 	/**
 	 * Forces control or its snippet to repaint.
-	 * @param  string
 	 * @return void
 	 */
-	public function invalidateControl($snippet = NULL)
+	public function redrawControl($snippet = NULL, $redraw = TRUE)
 	{
-		$this->invalidSnippets[$snippet] = TRUE;
-	}
+		if ($redraw) {
+			$this->invalidSnippets[$snippet === NULL ? "\0" : $snippet] = TRUE;
 
-
-	/**
-	 * Allows control or its snippet to not repaint.
-	 * @param  string
-	 * @return void
-	 */
-	public function validateControl($snippet = NULL)
-	{
-		if ($snippet === NULL) {
+		} elseif ($snippet === NULL) {
 			$this->invalidSnippets = [];
 
 		} else {
-			unset($this->invalidSnippets[$snippet]);
+			$this->invalidSnippets[$snippet] = FALSE;
 		}
+	}
+
+
+	/** @deprecated */
+	function invalidateControl($snippet = NULL)
+	{
+		trigger_error(__METHOD__ . '() is deprecated; use $this->redrawControl($snippet) instead.', E_USER_DEPRECATED);
+		$this->redrawControl($snippet);
+	}
+
+	/** @deprecated */
+	function validateControl($snippet = NULL)
+	{
+		trigger_error(__METHOD__ . '() is deprecated; use $this->redrawControl($snippet, FALSE) instead.', E_USER_DEPRECATED);
+		$this->redrawControl($snippet, FALSE);
 	}
 
 
@@ -221,8 +242,10 @@ trait TemplateControlTrait
 				return FALSE;
 			}
 
+		} elseif (isset($this->invalidSnippets[$snippet])) {
+			return $this->invalidSnippets[$snippet];
 		} else {
-			return isset($this->invalidSnippets[NULL]) || isset($this->invalidSnippets[$snippet]);
+			return isset($this->invalidSnippets["\0"]);
 		}
 	}
 
