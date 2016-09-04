@@ -7,7 +7,7 @@
  * @link       https://github.com/nextras/forms
  */
 
-namespace Nextras\Forms\DI;
+namespace Nextras\Forms\Bridges\NetteDI;
 
 use Nette\DI\CompilerExtension;
 use Nette\Forms\Container;
@@ -17,7 +17,6 @@ use Nextras\Forms\Controls;
 
 class FormsExtension extends CompilerExtension
 {
-
 	public function beforeCompile()
 	{
 		parent::beforeCompile();
