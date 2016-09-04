@@ -10,8 +10,6 @@
 namespace Nextras\Forms\Controls;
 
 use Nette;
-use Nette\Forms;
-use Nette\Forms\Controls\TextBase;
 
 
 /**

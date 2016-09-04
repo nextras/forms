@@ -14,10 +14,8 @@ use DateTime;
 use Nette;
 use Nette\Forms\Controls\TextBase;
 use Nette\Forms\Form;
-use Nette\Forms\IControl;
 use Nette\Forms\Rules;
 use Nette\Utils\Html;
-use Nette\Utils\Validators;
 
 
 abstract class DateTimePickerPrototype extends TextBase

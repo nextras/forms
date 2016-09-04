@@ -9,8 +9,8 @@
 
 namespace Nextras\Forms\Bridges\Latte\Macros;
 
-use Nette\Utils\Html;
 use Nette\Forms\Controls\BaseControl;
+use Nette\Utils\Html;
 use Nextras;
 
 

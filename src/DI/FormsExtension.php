@@ -9,7 +9,6 @@
 
 namespace Nextras\Forms\DI;
 
-use Nette;
 use Nette\DI\CompilerExtension;
 use Nette\Forms\Container;
 use Nette\PhpGenerator\ClassType;

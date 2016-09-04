@@ -9,10 +9,10 @@
 
 namespace Nextras\Forms\Rendering;
 
-use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette;
 use Nette\Forms\Controls;
 use Nette\Forms\Form;
-use Nette;
+use Nette\Forms\Rendering\DefaultFormRenderer;
 
 
 /**
