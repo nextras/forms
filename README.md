@@ -1,11 +1,10 @@
-Nextras\Forms
+Nextras Forms
 =============
 
 [![Build Status](https://travis-ci.org/nextras/forms.svg?branch=master)](https://travis-ci.org/nextras/forms)
 [![Downloads this Month](https://img.shields.io/packagist/dm/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
 [![Stable version](http://img.shields.io/packagist/v/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
 [![Code coverage](https://img.shields.io/coveralls/nextras/forms.svg?style=flat)](https://coveralls.io/r/nextras/forms)
-[![HHVM Status](http://img.shields.io/hhvm/nextras/forms.svg?style=flat)](http://hhvm.h4cc.de/package/nextras/forms)
 
 List of components:
 - **DatePicker** - date picker, represented by DateTime object
