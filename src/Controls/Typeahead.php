@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Controls;
@@ -17,8 +16,6 @@ use Nextras\Forms\Controls\Fragments\ComponentControlTrait;
 
 /**
  * Form control for autocomplete.
- *
- * @author   Jan Skrasek
  */
 class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI\ISignalReceiver
 {

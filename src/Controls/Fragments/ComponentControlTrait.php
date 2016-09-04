@@ -2,10 +2,12 @@
 
 /**
  * This file is part of the Nextras community extensions of Nette Framework
+ * and was partially extracted from Nette Framework itself due to the bad
+ * Nette Form's object architecture.
  *
- * @license    MIT
+ * @license    New BSD License or the GNU General Public License (GPL) version 2 or 3.
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
+ * @link       https://github.com/nette/application
  */
 
 namespace Nextras\Forms\Controls\Fragments;

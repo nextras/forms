@@ -5,7 +5,6 @@
  *
  * @license    New BSD License
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Rendering;
@@ -18,8 +17,6 @@ use Nette;
 
 /**
  * FormRenderer for Bootstrap 3 framework.
- * @author   Jan Skrasek
- * @author   David Grudl
  */
 class Bs3FormRenderer extends DefaultFormRenderer
 {

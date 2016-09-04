@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Bridges\Latte\Macros;

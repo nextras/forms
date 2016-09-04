@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Tomas Votruba (http://tomasvotruba.cz)
  */
 
 namespace Nextras\Forms\DI;

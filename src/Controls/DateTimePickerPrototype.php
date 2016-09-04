@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Controls;

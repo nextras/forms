@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Jan Tvrdik (http://merxes.cz)
  */
 
 namespace Nextras\Forms\Controls;
@@ -17,9 +16,6 @@ use Nette\Forms\Controls\TextBase;
 
 /**
  * Form control for selecting date.
- *
- * @author   Jan Tvrdik
- * @author   Jan Skrasek
  */
 class DatePicker extends DateTimePickerPrototype
 {

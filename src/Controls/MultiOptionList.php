@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Controls;
@@ -19,8 +18,6 @@ use Nette\Utils\Html;
 
 /**
  * Set of checkbox options.
- *
- * @author Jan Skrasek
  *
  * @property   array $items
  */

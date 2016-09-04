@@ -5,7 +5,6 @@
  *
  * @license    MIT
  * @link       https://github.com/nextras/forms
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Forms\Controls;
@@ -15,9 +14,7 @@ use DateTime;
 
 
 /**
- * Form control for selecting date with time
- *
- * @author   Jan Skrasek
+ * Form control for selecting date and time.
  */
 class DateTimePicker extends DateTimePickerPrototype
 {
