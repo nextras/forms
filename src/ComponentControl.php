@@ -22,12 +22,21 @@ use Nextras\Forms\Controls\Fragments\TemplateControlTrait;
  */
 abstract class ComponentControl extends BaseControl implements ISignalReceiver, \ArrayAccess, IContainer, IRenderable
 {
-	use TemplateControlTrait;
+	use TemplateControlTrait {
+		attached as componentControlAttached;
+	}
 
 
 	public function __construct($caption = null)
 	{
 		parent::__construct($caption);
 		$this->control = Nette\Utils\Html::el('div');
+	}
+
+
+	protected function attached($component)
+	{
+		parent::attached($component);
+		$this->componentControlAttached($component);
 	}
 }
