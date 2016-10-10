@@ -29,15 +29,19 @@ class BS3InputMacros extends BaseInputMacros
 	public static function input(Html $input, BaseControl $control, $isPart)
 	{
 		$name = $input->getName();
-		if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, ['radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset']))) {
-			$input->addClass('form-control');
 
-		} elseif ($name === 'input' && ($input->type === 'submit' || $input->type === 'reset')) {
-			$input->setName('button');
-			$input->addHtml($input->value);
-			$input->addClass('btn');
+		if ($control->getForm()->getRenderer() instanceof Nextras\Forms\Rendering\Bs3FormRenderer) {
+			$name = $input->getName();
+			if ($name === 'select' || $name === 'textarea' || ($name === 'input' && !in_array($input->type, ['radio', 'checkbox', 'file', 'hidden', 'range', 'image', 'submit', 'reset']))) {
+				$input->addClass('form-control');
+
+			} elseif ($name === 'input' && ($input->type === 'submit' || $input->type === 'reset')) {
+				$input->setName('button');
+				$input->addHtml($input->value);
+				$input->addClass('btn');
+			}
 		}
-
+		
 		return $input;
 	}
 }
