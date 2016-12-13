@@ -46,7 +46,6 @@ abstract class DateTimePickerPrototype extends TextBase
 		$control = parent::getControl();
 		$control->type = $this->htmlType;
 		$control->addClass($this->htmlType);
-		$control->{'data-nette-rules'} = null;
 
 		list($min, $max) = $this->extractRangeRule($this->getRules());
 		if ($min instanceof DateTime) {
