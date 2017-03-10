@@ -65,7 +65,7 @@ abstract class DateTimePickerPrototype extends TextBase
 
 	public function setValue($value)
 	{
-		return parent::setValue($value instanceof DateTime ? $value->format($this->htmlFormat) : $value);
+		return parent::setValue($value instanceof \DateTimeInterface ? $value->format($this->htmlFormat) : $value);
 	}
 
 
