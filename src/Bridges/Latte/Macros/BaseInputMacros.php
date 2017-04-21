@@ -3,8 +3,8 @@
 /**
  * This file is part of the Nextras community extensions of Nette Framework
  *
- * @license    MIT
- * @link       https://github.com/nextras/forms
+ * @license	MIT
+ * @link	   https://github.com/nextras/forms
  */
 
 namespace Nextras\Forms\Bridges\Latte\Macros;
@@ -26,7 +26,7 @@ abstract class BaseInputMacros extends MacroSet
 	{
 		$me = new static($compiler);
 		$me->addMacro('input', [$me, 'macroInput']);
-		$me->addMacro('label', [$me, 'macroLabel'], [$me, 'macroLabelEnd']);
+		$me->addMacro('label', [$me, 'macroLabel'], [$me, 'macroLabelEnd'], NULL, self::AUTO_EMPTY);
 		return $me;
 	}
 
@@ -49,7 +49,7 @@ abstract class BaseInputMacros extends MacroSet
 			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input, %2.var)',
 			$name,
 			$words ? ('getLabelPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')') : 'getLabel()',
-			(bool) $words
+			(bool)$words
 		);
 	}
 
@@ -84,7 +84,7 @@ abstract class BaseInputMacros extends MacroSet
 			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input, %2.var)',
 			$name,
 			$words ? 'getControlPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')' : 'getControl()',
-			(bool) $words
+			(bool)$words
 		);
 	}
 
