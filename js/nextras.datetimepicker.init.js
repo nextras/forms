@@ -9,7 +9,7 @@
 jQuery(function($) {
 	$('input.date, input.datetime-local').each(function(i, el) {
 		el = $(el);
-		el.get(0).type = 'text';
+		el.first().type = 'text';
 		el.datetimepicker({
 			startDate: el.attr('min'),
 			endDate: el.attr('max'),
