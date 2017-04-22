@@ -26,13 +26,13 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{label foo /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, false);',
+			'$_form = isset($_form) ? $_form : $form;$_input = $_form["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{label foo: /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, true);',
+			'$_form = isset($_form) ? $_form : $form;$_input = $_form["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
@@ -47,13 +47,13 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{input foo}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\\Forms\\MockBaseInputMacros::input($_input->getControl()->addAttributes([]), $_input, false);',
+			'$_form = isset($_form) ? $_form : $form;$_input = $_form["foo"];echo NextrasTests\\Forms\\MockBaseInputMacros::input($_input->getControl()->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{input foo:}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes([]), $_input, true);',
+			'$_form = isset($_form) ? $_form : $form;$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
