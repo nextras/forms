@@ -26,7 +26,7 @@
 		"nette/utils": "~2.2"
 	},
 	"require-dev": {
-		"latte/latte": "~2.2",
+		"latte/latte": "~2.4",
 		"nette/tester": "~1.4"
 	},
 	"extra": {

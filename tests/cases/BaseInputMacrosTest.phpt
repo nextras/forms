@@ -15,7 +15,7 @@ require_once __DIR__ . '/../bootstrap.php';
 class MockBaseInputMacros extends BaseInputMacros {}
 
 
-class BaseInputMactrosTest extends TestCase
+class BaseInputMacrosTest extends TestCase
 {
 
 	public function testLabel()
@@ -26,13 +26,13 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{label foo /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes(array()), $_input, false) ; ',
+			'$_input = $_form["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{label foo: /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes(array()), $_input, true) ; ',
+			'$_input = $_form["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
@@ -47,13 +47,13 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{input foo}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControl()->addAttributes(array()), $_input, false) ;',
+			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControl()->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{input foo:}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes(array()), $_input, true) ;',
+			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
@@ -61,13 +61,14 @@ class BaseInputMactrosTest extends TestCase
 
 	private function extract($content)
 	{
-		$needle = "//\n// main template\n//\n";
-		$content = substr($content, strpos($content, $needle) + strlen($needle));
-		return substr($content, 0, -3); // \n}}
+		$lines = explode("\n", $content);
+		$lines = array_slice($lines, 11, -5);
+		$lines = implode('', array_map('trim', $lines));
+		return $lines;
 	}
 
 }
 
 
-$test = new BaseInputMactrosTest();
+$test = new BaseInputMacrosTest();
 $test->run();
