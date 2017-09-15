@@ -120,7 +120,8 @@ trait TemplateControlTrait
 			}
 			$this->template = $value;
 			$this->template->form = $this->template->_form = $this;
-			$this->template->setFile($this->templateFile ?: dirname($this->reflection->getFileName()) . '/' . $this->reflection->getShortName() . '.latte');
+			$reflection = new \ReflectionClass(get_called_class());
+			$this->template->setFile($this->templateFile ?: dirname($reflection->getFileName()) . '/' . $reflection->getShortName() . '.latte');
 		}
 		return $this->template;
 	}
