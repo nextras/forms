@@ -44,8 +44,8 @@ abstract class BaseInputMacros extends MacroSet
 		$name = array_shift($words);
 		return $writer->write(
 			($name[0] === '$'
-				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
-				: '$_input = $_form[%0.word];'
+				? '$_input = is_object(%0.word) ? %0.word : end($this->global->formsStack)[%0.word];'
+				: '$_input = end($this->global->formsStack)[%0.word];'
 			) . 'if ($_label = $_input->%1.raw) echo ' . $class . '::label($_label->addAttributes(%node.array), $_input, %2.var)',
 			$name,
 			$words ? ('getLabelPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')') : 'getLabel()',
@@ -79,8 +79,8 @@ abstract class BaseInputMacros extends MacroSet
 		$name = array_shift($words);
 		return $writer->write(
 			($name[0] === '$'
-				? '$_input = is_object(%0.word) ? %0.word : $_form[%0.word];'
-				: '$_input = $_form[%0.word];'
+				? '$_input = is_object(%0.word) ? %0.word : end($this->global->formsStack)[%0.word];'
+				: '$_input = end($this->global->formsStack)[%0.word];'
 			) . 'echo ' . $class . '::input($_input->%1.raw->addAttributes(%node.array), $_input, %2.var)',
 			$name,
 			$words ? 'getControlPart(' . implode(', ', array_map([$writer, 'formatWord'], $words)) . ')' : 'getControl()',
