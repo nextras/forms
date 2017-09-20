@@ -10,6 +10,7 @@
 namespace Nextras\Forms\Bridges\Latte\Macros;
 
 use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\RadioList;
 use Nette\Utils\Html;
 use Nextras;
 
@@ -36,6 +37,9 @@ class BS3InputMacros extends BaseInputMacros
 			$input->setName('button');
 			$input->addHtml($input->value);
 			$input->addClass('btn');
+
+		} elseif ($control instanceof RadioList) {
+			$input = Html::el('div')->addAttributes(['class' => 'radio'])->addHtml($input);
 		}
 
 		return $input;
