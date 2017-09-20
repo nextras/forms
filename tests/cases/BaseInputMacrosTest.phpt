@@ -4,20 +4,22 @@
 
 namespace NextrasTests\Forms;
 
+use Latte;
 use Nextras\Forms\Bridges\Latte\Macros\BaseInputMacros;
 use Tester\Assert;
 use Tester\TestCase;
-use Latte;
+
 
 require_once __DIR__ . '/../bootstrap.php';
 
 
-class MockBaseInputMacros extends BaseInputMacros {}
+class MockBaseInputMacros extends BaseInputMacros
+{
+}
 
 
 class BaseInputMactrosTest extends TestCase
 {
-
 	public function testLabel()
 	{
 		$latte = new Latte\Engine;
@@ -26,17 +28,16 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{label foo /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, false);',
+			'$_input = end($this->global->formsStack)["foo"];if ($_label = $_input->getLabel()) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{label foo: /}'));
 		Assert::same(
-			'$_input = $_form["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, true);',
+			'$_input = end($this->global->formsStack)["foo"];if ($_label = $_input->getLabelPart("")) echo NextrasTests\Forms\MockBaseInputMacros::label($_label->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
-
 
 
 	public function testInput()
@@ -47,13 +48,13 @@ class BaseInputMactrosTest extends TestCase
 
 		$result = $this->extract($latte->compile('{input foo}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\\Forms\\MockBaseInputMacros::input($_input->getControl()->addAttributes([]), $_input, false);',
+			'$_input = end($this->global->formsStack)["foo"];echo NextrasTests\\Forms\\MockBaseInputMacros::input($_input->getControl()->addAttributes([]), $_input, false);',
 			$result
 		);
 
 		$result = $this->extract($latte->compile('{input foo:}'));
 		Assert::same(
-			'$_input = $_form["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes([]), $_input, true);',
+			'$_input = end($this->global->formsStack)["foo"];echo NextrasTests\Forms\MockBaseInputMacros::input($_input->getControlPart("")->addAttributes([]), $_input, true);',
 			$result
 		);
 	}
@@ -66,7 +67,6 @@ class BaseInputMactrosTest extends TestCase
 		$lines = implode('', array_map('trim', $lines));
 		return $lines;
 	}
-
 }
 
 
