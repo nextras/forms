@@ -148,6 +148,7 @@ trait TemplateControlTrait
 		if ($template instanceof Template) {
 			$presenter = $this->getPresenter(false);
 			$latte = $template->getLatte();
+			$latte->addProvider('formsStack', [$this]);
 			$latte->addProvider('uiControl', $this);
 			$latte->addProvider('uiPresenter', $presenter);
 			$latte->addProvider('snippetBridge', new SnippetBridge($this));
