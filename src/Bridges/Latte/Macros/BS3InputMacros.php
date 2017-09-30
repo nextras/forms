@@ -38,7 +38,7 @@ class BS3InputMacros extends BaseInputMacros
 			$input->addHtml($input->value);
 			$input->addClass('btn');
 
-		} elseif ($control instanceof RadioList) {
+		} elseif ($control instanceof RadioList && !$isPart) {
 			$input = Html::el('div')->addAttributes(['class' => 'radio'])->addHtml($input);
 		}
 
