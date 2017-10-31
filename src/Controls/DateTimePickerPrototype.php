@@ -10,7 +10,7 @@
 namespace Nextras\Forms\Controls;
 
 use Closure;
-use DateTime;
+use DateTimeInterface;
 use Nette;
 use Nette\Forms\Controls\TextBase;
 use Nette\Forms\Form;
@@ -48,14 +48,14 @@ abstract class DateTimePickerPrototype extends TextBase
 		$control->addClass($this->htmlType);
 
 		list($min, $max) = $this->extractRangeRule($this->getRules());
-		if ($min instanceof DateTime) {
+		if ($min instanceof DateTimeInterface) {
 			$control->min = $min->format($this->htmlFormat);
 		}
-		if ($max instanceof DateTime) {
+		if ($max instanceof DateTimeInterface) {
 			$control->max = $max->format($this->htmlFormat);
 		}
 		$value = $this->getValue();
-		if ($value instanceof DateTime) {
+		if ($value instanceof DateTimeInterface) {
 			$control->value = $value->format($this->htmlFormat);
 		}
 
@@ -65,7 +65,7 @@ abstract class DateTimePickerPrototype extends TextBase
 
 	public function setValue($value)
 	{
-		return parent::setValue($value instanceof \DateTimeInterface ? $value->format($this->htmlFormat) : $value);
+		return parent::setValue($value instanceof DateTimeInterface ? $value->format($this->htmlFormat) : $value);
 	}
 
 
@@ -74,7 +74,7 @@ abstract class DateTimePickerPrototype extends TextBase
 	 */
 	public function getValue()
 	{
-		if ($this->value instanceof DateTime) {
+		if ($this->value instanceof DateTimeInterface) {
 			// clone
 			return Nette\Utils\DateTime::from($this->value);
 
@@ -91,7 +91,7 @@ abstract class DateTimePickerPrototype extends TextBase
 
 			foreach ($parsers as $parser) {
 				$value = $parser($this->value);
-				if ($value instanceof DateTime) {
+				if ($value instanceof DateTimeInterface) {
 					return $value;
 				}
 			}
