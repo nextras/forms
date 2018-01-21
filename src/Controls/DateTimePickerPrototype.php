@@ -35,6 +35,9 @@ abstract class DateTimePickerPrototype extends TextBase
 	/** @var Closure[] */
 	protected $parsers = [];
 
+    	/** @var string */
+	protected $language = 'en';
+	
 
 	/**
 	 * Generates control's HTML element.
@@ -58,11 +61,20 @@ abstract class DateTimePickerPrototype extends TextBase
 		if ($value instanceof DateTimeInterface) {
 			$control->value = $value->format($this->htmlFormat);
 		}
+		
+		$control->setAttribute('data-language', $this->language);
 
+		
 		return $control;
 	}
 
 
+	public function setLanguage(string $language)
+	{
+		$this->language = $language;
+		return $this;
+	}
+	
 	public function setValue($value)
 	{
 		return parent::setValue($value instanceof DateTimeInterface ? $value->format($this->htmlFormat) : $value);

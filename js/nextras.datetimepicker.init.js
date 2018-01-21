@@ -6,6 +6,15 @@
  * @author     Jan Skrasek
  */
 
+$.fn.datetimepicker.dates['cs'] = {
+        days: ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota", "Neděle"],
+        daysShort: ["Ned", "Pon", "Úte", "Stř", "Čtv", "Pát", "Sob", "Ned"],
+        daysMin: ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+        months: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
+        monthsShort: ["Led", "Úno", "Bře", "Dub", "Kvě", "Čvn", "Čvc", "Srp", "Zář", "Říj", "Lis", "Pro"],
+        today: "Dnes"
+    };
+
 jQuery(function($) {
 	$('input[type="date"]:not(.date)').addClass('date');
 	$('input[type="datetime-local"]:not(.datetime-local)').addClass('datetime-local');
@@ -21,6 +30,7 @@ jQuery(function($) {
 		el.datetimepicker({
 			startDate: el.attr('min'),
 			endDate: el.attr('max'),
+			language: el.data('language'),
 			weekStart: 1,
 			minView: isDate ? 'month' : 'hour',
 			format: isDate ? 'd. m. yyyy' : 'd. m. yyyy - hh:ii', // for seconds support use 'd. m. yyyy - hh:ii:ss'
