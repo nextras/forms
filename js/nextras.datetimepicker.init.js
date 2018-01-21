@@ -21,6 +21,7 @@ jQuery(function($) {
 		el.datetimepicker({
 			startDate: el.attr('min'),
 			endDate: el.attr('max'),
+			language: el.data('language'),
 			weekStart: 1,
 			minView: isDate ? 'month' : 'hour',
 			format: isDate ? 'd. m. yyyy' : 'd. m. yyyy - hh:ii', // for seconds support use 'd. m. yyyy - hh:ii:ss'
