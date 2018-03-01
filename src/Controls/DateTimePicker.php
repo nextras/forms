@@ -9,7 +9,7 @@
 
 namespace Nextras\Forms\Controls;
 
-use Nette;
+use DateTimeImmutable;
 
 
 /**
@@ -47,10 +47,10 @@ class DateTimePicker extends DateTimePickerPrototype
 				return null;
 			}
 
-			$value = new Nette\Utils\DateTime;
-			$value->setDate($yyyy, $mm, $dd);
-			$value->setTime($hh, $ii, $ss);
-			return $value;
+			return (new DateTimeImmutable)
+				->setTimezone(new \DateTimeZone(date_default_timezone_get()))
+				->setDate($yyyy, $mm, $dd)
+				->setTime($hh, $ii, $ss);
 		};
 	}
 }

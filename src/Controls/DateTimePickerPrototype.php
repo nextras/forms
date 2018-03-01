@@ -11,6 +11,7 @@ namespace Nextras\Forms\Controls;
 
 use Closure;
 use DateTimeInterface;
+use DateTimeImmutable;
 use Nette;
 use Nette\Forms\Controls\TextBase;
 use Nette\Forms\Form;
@@ -70,17 +71,19 @@ abstract class DateTimePickerPrototype extends TextBase
 
 
 	/**
-	 * @return Nette\Utils\DateTime|null
+	 * @return DateTimeImmutable|null
 	 */
 	public function getValue()
 	{
-		if ($this->value instanceof DateTimeInterface) {
-			// clone
-			return Nette\Utils\DateTime::from($this->value);
+		if ($this->value instanceof DateTimeImmutable) {
+			return $this->value;
+
+		} elseif ($this->value instanceof DateTimeInterface) {
+			return DateTimeImmutable::createFromMutable($this->value);
 
 		} elseif (is_int($this->value)) {
 			// timestamp
-			return Nette\Utils\DateTime::from($this->value);
+			return $this->convertToDateTimeImmutable($this->value);
 
 		} elseif (empty($this->value)) {
 			return null;
@@ -91,20 +94,31 @@ abstract class DateTimePickerPrototype extends TextBase
 
 			foreach ($parsers as $parser) {
 				$value = $parser($this->value);
-				if ($value instanceof DateTimeInterface) {
+				if ($value instanceof DateTimeImmutable) {
 					return $value;
+
+				} elseif ($value instanceof DateTimeInterface) {
+					return DateTimeImmutable::createFromMutable($value);
+
 				}
 			}
 
 			try {
 				// DateTime constructor throws Exception when invalid input given
-				return Nette\Utils\DateTime::from($this->value);
+				return $this->convertToDateTimeImmutable($this->value);
 			} catch (\Exception $e) {
 				return null;
 			}
 		}
 
 		return null;
+	}
+
+	protected function convertToDateTimeImmutable($value)
+	{
+		return DateTimeImmutable::createFromMutable(
+			Nette\Utils\DateTime::from($value)
+		);
 	}
 
 
@@ -152,6 +166,6 @@ abstract class DateTimePickerPrototype extends TextBase
 				$ruleMinMax = null;
 			}
 		}
-		return array($controlMin, $controlMax);
+		return [$controlMin, $controlMax];
 	}
 }

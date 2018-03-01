@@ -9,7 +9,7 @@
 
 namespace Nextras\Forms\Controls;
 
-use Nette;
+use DateTimeImmutable;
 
 
 /**
@@ -39,23 +39,22 @@ class DatePicker extends DateTimePickerPrototype
 				return null;
 			}
 
-			$value = new Nette\Utils\DateTime;
-			$value->setDate($yyyy, $mm, $dd);
-			$value->setTime(0, 0, 0);
-			return $value;
+			return (new DateTimeImmutable)
+				->setDate($yyyy, $mm, $dd)
+				->setTime(0, 0, 0);
 		};
 	}
 	
 	
 	/**
-	 * @return \Nette\Utils\DateTime|NULL
+	 * @return DateTimeImmutable|NULL
 	 */
 	public function getValue()
 	{
 		$val = parent::getValue();
 		// set midnight so the limit dates (min & max) pass the :RANGE validation rule
-		if ($val instanceof Nette\Utils\DateTime) {
-			$val->setTime(0, 0, 0);
+		if ($val !== null) {
+			return $val->setTime(0, 0, 0);
 		}
 		return $val;
 	}
