@@ -22,6 +22,10 @@ class BS3InputMacros extends BaseInputMacros
 		if ($label->getName() === 'label' && !$isPart) {
 			$label->addClass('control-label');
 		}
+		
+		if ($control->isRequired()) {
+			$label->addClass('required');
+		}
 
 		return $label;
 	}
