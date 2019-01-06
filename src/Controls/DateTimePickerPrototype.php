@@ -39,10 +39,8 @@ abstract class DateTimePickerPrototype extends TextBase
 
 	/**
 	 * Generates control's HTML element.
-	 *
-	 * @return Html
 	 */
-	public function getControl()
+	public function getControl(): Html
 	{
 		$control = parent::getControl();
 		$control->type = $this->htmlType;

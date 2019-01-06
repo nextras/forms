@@ -9,21 +9,22 @@
 
 namespace Nextras\Forms\Controls;
 
-use Nette;
-use Nette\Forms;
+use Nette\Application\IPresenter;
+use Nette\Application\UI\ISignalReceiver;
+use Nette\Forms\Controls\TextInput;
+use Nette\InvalidStateException;
+use Nette\Utils\Html;
 use Nextras\Forms\Controls\Fragments\ComponentControlTrait;
 
 
 /**
  * Form control for autocomplete.
  */
-class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI\ISignalReceiver
+class Typeahead extends TextInput implements ISignalReceiver
 {
-	use ComponentControlTrait {
-		attached as componentControlAttached;
-	}
+	use ComponentControlTrait;
 
-	/** @var Nette\Utils\Callback */
+	/** @var callable */
 	protected $callback;
 
 
@@ -31,10 +32,13 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	{
 		parent::__construct($caption);
 		$this->setCallback($callback);
+		$this->monitor(IPresenter::class, function () {
+			$this->control->{'data-typeahead-url'} = $this->link('autocomplete!', ['q' => '__QUERY_PLACEHOLDER__']);
+		});
 	}
 
 
-	public function getControl()
+	public function getControl(): Html
 	{
 		$control = parent::getControl();
 		$control->addClass('typeahead');
@@ -42,28 +46,19 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	}
 
 
-	public function setCallback($callback)
+	public function setCallback(callable $callback)
 	{
 		$this->callback = $callback;
 	}
 
 
-	public function handleAutocomplete($q)
+	public function handleAutocomplete(string $q)
 	{
 		if (!$this->callback) {
-			throw new Nette\InvalidStateException('Undefined Typehad callback.');
+			throw new InvalidStateException('Undefined Typeahead callback.');
 		}
 
-		$this->getPresenter()->sendJson(Nette\Utils\Callback::invokeArgs($this->callback, [$q]));
-	}
-
-
-	protected function attached($component)
-	{
-		parent::attached($component);
-		$this->componentControlAttached($component);
-		if ($component instanceof Nette\Application\IPresenter) {
-			$this->control->{'data-typeahead-url'} = $this->link('autocomplete!', ['q' => '__QUERY_PLACEHOLDER__']);
-		}
+		$out = call_user_func($this->callback, $q);
+		$this->getPresenter()->sendJson($out);
 	}
 }
