@@ -12,20 +12,22 @@
 	],
 	"require": {
 		"php": ">=7.1",
-		"nette/application": "~2.4",
-		"nette/component-model": "~2.3",
-		"nette/forms": "~2.4",
-		"nette/utils": "~2.4",
-		"latte/latte": "~2.4"
+		"nette/application": "~3.0",
+		"nette/component-model": "~3.0",
+		"nette/forms": "~3.0",
+		"nette/utils": "~3.0",
+		"latte/latte": "~3.0"
 	},
 	"require-dev": {
-		"nette/tester": "~1.4"
+		"nette/tester": "~2.1"
 	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "3.0-dev"
 		}
 	},
+	"minimum-stability": "rc",
+	"prefer-stable": true,
 	"autoload": {
 		"psr-4": { "Nextras\\Forms\\": "src/" }
 	}
