@@ -17,6 +17,7 @@ use Nette\Application\UI\BadSignalException;
 use Nette\Application\UI\ComponentReflection;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Application\UI\Presenter;
+use Nette\ComponentModel\Container;
 use Nette\ComponentModel\IComponent;
 use Nette\ComponentModel\IContainer;
 use Nette\ComponentModel\RecursiveComponentIterator;
@@ -41,7 +42,7 @@ trait ComponentControlTrait
 	/** @var IComponent[] */
 	private $components = [];
 
-	/** @var IComponent|NULL */
+	/** @var Container|null */
 	private $cloning;
 
 
@@ -49,26 +50,17 @@ trait ComponentControlTrait
 
 
 	/**
-	 * Adds the specified component to the IContainer.
-	 * @param  IComponent
-	 * @param  string
-	 * @param  string
-	 * @return self
+	 * Adds the component to the container.
+	 * @return static
 	 * @throws Nette\InvalidStateException
 	 */
-	public function addComponent(IComponent $component, $name, $insertBefore = NULL)
+	public function addComponent(IComponent $component, ?string $name, string $insertBefore = null)
 	{
-		if ($name === NULL) {
+		if ($name === null) {
 			$name = $component->getName();
 		}
 
-		if (is_int($name)) {
-			$name = (string) $name;
-
-		} elseif (!is_string($name)) {
-			throw new Nette\InvalidArgumentException(sprintf('Component name must be integer or string, %s given.', gettype($name)));
-
-		} elseif (!preg_match('#^[a-zA-Z0-9_]+\z#', $name)) {
+		if (!preg_match('#^[a-zA-Z0-9_]+\z#', $name)) {
 			throw new Nette\InvalidArgumentException("Component name must be non-empty alphanumeric string, '$name' given.");
 		}
 
@@ -83,27 +75,27 @@ trait ComponentControlTrait
 				throw new Nette\InvalidStateException("Circular reference detected while adding component '$name'.");
 			}
 			$obj = $obj->getParent();
-		} while ($obj !== NULL);
+		} while ($obj !== null);
 
 		// user checking
 		$this->validateChildComponent($component);
 
-		try {
-			if (isset($this->components[$insertBefore])) {
-				$tmp = [];
-				foreach ($this->components as $k => $v) {
-					if ($k === $insertBefore) {
-						$tmp[$name] = $component;
-					}
-					$tmp[$k] = $v;
+		if (isset($this->components[$insertBefore])) {
+			$tmp = [];
+			foreach ($this->components as $k => $v) {
+				if ($k === $insertBefore) {
+					$tmp[$name] = $component;
 				}
-				$this->components = $tmp;
-			} else {
-				$this->components[$name] = $component;
+				$tmp[$k] = $v;
 			}
-			$component->setParent($this, $name);
+			$this->components = $tmp;
+		} else {
+			$this->components[$name] = $component;
+		}
 
-		} catch (\Exception $e) {
+		try {
+			$component->setParent($this, $name);
+		} catch (\Throwable $e) {
 			unset($this->components[$name]); // undo
 			throw $e;
 		}
@@ -112,93 +104,69 @@ trait ComponentControlTrait
 
 
 	/**
-	 * Removes a component from the IContainer.
-	 * @return void
+	 * Removes the component from the container.
 	 */
-	public function removeComponent(IComponent $component)
+	public function removeComponent(IComponent $component): void
 	{
 		$name = $component->getName();
-		if (!isset($this->components[$name]) || $this->components[$name] !== $component) {
+		if (($this->components[$name] ?? null) !== $component) {
 			throw new Nette\InvalidArgumentException("Component named '$name' is not located in this container.");
 		}
 
 		unset($this->components[$name]);
-		$component->setParent(NULL);
+		$component->setParent(null);
 	}
 
 
 	/**
 	 * Returns component specified by name or path.
-	 * @param  string
-	 * @param  bool   throw exception if component doesn't exist?
-	 * @return IComponent|NULL
+	 * @param  bool  $throw  throw exception if component doesn't exist?
 	 */
-	public function getComponent($name, $need = TRUE)
+	final public function getComponent(string $name, bool $throw = true): ?IComponent
 	{
-		if (isset($this->components[$name])) {
-			return $this->components[$name];
-		}
-
-		if (is_int($name)) {
-			$name = (string) $name;
-
-		} elseif (!is_string($name)) {
-			throw new Nette\InvalidArgumentException(sprintf('Component name must be integer or string, %s given.', gettype($name)));
-
-		} else {
-			$a = strpos($name, self::NAME_SEPARATOR);
-			if ($a !== FALSE) {
-				$ext = (string) substr($name, $a + 1);
-				$name = substr($name, 0, $a);
-			}
-
-			if ($name === '') {
-				if ($need) {
-					throw new Nette\InvalidArgumentException('Component or subcomponent name must not be empty string.');
-				}
-				return;
-			}
-		}
+		[$name] = $parts = explode(self::NAME_SEPARATOR, $name, 2);
 
 		if (!isset($this->components[$name])) {
-			$component = $this->createComponent($name);
-			if ($component) {
-				if (!$component instanceof IComponent) {
-					throw new Nette\UnexpectedValueException('Method createComponent() did not return Nette\ComponentModel\IComponent.');
-
-				} elseif (!isset($this->components[$name])) {
-					$this->addComponent($component, $name);
+			if (!preg_match('#^[a-zA-Z0-9_]+\z#', $name)) {
+				if ($throw) {
+					throw new Nette\InvalidArgumentException("Component name must be non-empty alphanumeric string, '$name' given.");
 				}
+				return null;
+			}
+
+			$component = $this->createComponent($name);
+			if ($component && !isset($this->components[$name])) {
+				$this->addComponent($component, $name);
 			}
 		}
 
-		if (isset($this->components[$name])) {
-			if (!isset($ext)) {
-				return $this->components[$name];
+		$component = $this->components[$name] ?? null;
+		if ($component !== null) {
+			if (!isset($parts[1])) {
+				return $component;
 
-			} elseif ($this->components[$name] instanceof IContainer) {
-				return $this->components[$name]->getComponent($ext, $need);
+			} elseif ($component instanceof IContainer) {
+				return $component->getComponent($parts[1], $throw);
 
-			} elseif ($need) {
-				throw new Nette\InvalidArgumentException("Component with name '$name' is not container and cannot have '$ext' component.");
+			} elseif ($throw) {
+				throw new Nette\InvalidArgumentException("Component with name '$name' is not container and cannot have '$parts[1]' component.");
 			}
 
-		} elseif ($need) {
-			$hint = Nette\Utils\ObjectMixin::getSuggestion(array_merge(
+		} elseif ($throw) {
+			$hint = Nette\Utils\ObjectHelpers::getSuggestion(array_merge(
 				array_keys($this->components),
 				array_map('lcfirst', preg_filter('#^createComponent([A-Z0-9].*)#', '$1', get_class_methods($this)))
 			), $name);
 			throw new Nette\InvalidArgumentException("Component with name '$name' does not exist" . ($hint ? ", did you mean '$hint'?" : '.'));
 		}
+		return null;
 	}
 
 
 	/**
 	 * Component factory. Delegates the creation of components to a createComponent<Name> method.
-	 * @param  string      component name
-	 * @return IComponent  the created component (optionally)
 	 */
-	protected function createComponent($name)
+	protected function createComponent(string $name): ?IComponent
 	{
 		$ucname = ucfirst($name);
 		$method = 'createComponent' . $ucname;
@@ -210,21 +178,18 @@ trait ComponentControlTrait
 			}
 			return $component;
 		}
+		return null;
 	}
 
 
 	/**
-	 * Iterates over components.
-	 * @param  bool    recursive?
-	 * @param  string  class types filter
-	 * @return \ArrayIterator
+	 * Iterates over descendants components.
 	 */
-	public function getComponents($deep = FALSE, $filterType = NULL)
+	final public function getComponents(bool $deep = false, string $filterType = null): \Iterator
 	{
 		$iterator = new RecursiveComponentIterator($this->components);
 		if ($deep) {
-			$deep = $deep > 0 ? \RecursiveIteratorIterator::SELF_FIRST : \RecursiveIteratorIterator::CHILD_FIRST;
-			$iterator = new \RecursiveIteratorIterator($iterator, $deep);
+			$iterator = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::SELF_FIRST);
 		}
 		if ($filterType) {
 			$iterator = new \CallbackFilterIterator($iterator, function ($item) use ($filterType) {
@@ -237,10 +202,9 @@ trait ComponentControlTrait
 
 	/**
 	 * Descendant can override this method to disallow insert a child by throwing an Nette\InvalidStateException.
-	 * @return void
 	 * @throws Nette\InvalidStateException
 	 */
-	protected function validateChildComponent(IComponent $child)
+	protected function validateChildComponent(IComponent $child): void
 	{
 	}
 
@@ -259,7 +223,7 @@ trait ComponentControlTrait
 			foreach ($this->components as $name => $component) {
 				$this->components[$name] = clone $component;
 			}
-			$oldMyself->cloning = NULL;
+			$oldMyself->cloning = null;
 		}
 		parent::__clone();
 	}
@@ -267,10 +231,9 @@ trait ComponentControlTrait
 
 	/**
 	 * Is container cloning now?
-	 * @return NULL|IComponent
 	 * @internal
 	 */
-	public function _isCloning()
+	final public function _isCloning(): ?self
 	{
 		return $this->cloning;
 	}
@@ -279,7 +242,9 @@ trait ComponentControlTrait
 	/**** Application\UI\Component ************************************************************************************/
 
 
-	/** @var callable[]  function (self $sender); Occurs when component is attached to presenter */
+	use Nette\ComponentModel\ArrayAccess;
+
+	/** @var callable[]  function (Component $sender): void; Occurs when component is attached to presenter */
 	public $onAnchor;
 
 	/** @var array */
@@ -288,86 +253,82 @@ trait ComponentControlTrait
 
 	/**
 	 * Returns the presenter where this component belongs to.
-	 * @param  bool   throw exception if presenter doesn't exist?
-	 * @return Presenter|NULL
 	 */
-	public function getPresenter($need = TRUE)
+	public function getPresenter(): ?Presenter
 	{
-		return $this->lookup(Presenter::class, $need);
+		if (func_num_args()) {
+			trigger_error(__METHOD__ . '() parameter $throw is deprecated, use hasPresenter()', E_USER_DEPRECATED);
+			$throw = func_get_arg(0);
+		}
+		return $this->lookup(Presenter::class, $throw ?? true);
+	}
+
+
+	/**
+	 * Returns whether there is a presenter.
+	 */
+	public function hasPresenter(): bool
+	{
+		return (bool) $this->lookup(Presenter::class, false);
 	}
 
 
 	/**
 	 * Returns a fully-qualified name that uniquely identifies the component
 	 * within the presenter hierarchy.
-	 * @return string
 	 */
-	public function getUniqueId()
+	public function getUniqueId(): string
 	{
-		return $this->lookupPath(Presenter::class, TRUE);
+		return $this->lookupPath(Presenter::class, true);
 	}
 
 
-	/**
-	 * This method will be called when the component (or component's parent)
-	 * becomes attached to a monitored object. Do not call this method yourself.
-	 * @param  Nette\ComponentModel\IComponent
-	 * @return void
-	 */
-	protected function attached($presenter)
-	{
-		if ($presenter instanceof Presenter) {
-			$this->loadState($presenter->popGlobalParameters($this->getUniqueId()));
-			$this->onAnchor($this);
-		}
-	}
-
-
-	/**
-	 * @return void
-	 */
-	protected function validateParent(Nette\ComponentModel\IContainer $parent)
+	protected function validateParent(Nette\ComponentModel\IContainer $parent): void
 	{
 		parent::validateParent($parent);
-		$this->monitor(Presenter::class);
+		$this->monitor(Presenter::class, function (Presenter $presenter): void {
+			$this->loadState($presenter->popGlobalParameters($this->getUniqueId()));
+			$this->onAnchor($this);
+		});
 	}
 
 
 	/**
 	 * Calls public method if exists.
-	 * @param  string
-	 * @param  array
 	 * @return bool  does method exist?
 	 */
-	protected function tryCall($method, array $params)
+	protected function tryCall(string $method, array $params): bool
 	{
 		$rc = $this->getReflection();
 		if ($rc->hasMethod($method)) {
 			$rm = $rc->getMethod($method);
 			if ($rm->isPublic() && !$rm->isAbstract() && !$rm->isStatic()) {
 				$this->checkRequirements($rm);
-				$rm->invokeArgs($this, $rc->combineArgs($rm, $params));
-				return TRUE;
+				try {
+					$args = $rc->combineArgs($rm, $params);
+				} catch (Nette\InvalidArgumentException $e) {
+					throw new Nette\Application\BadRequestException($e->getMessage());
+				}
+				$rm->invokeArgs($this, $args);
+				return true;
 			}
 		}
-		return FALSE;
+		return false;
 	}
 
 
 	/**
 	 * Checks for requirements such as authorization.
-	 * @return void
 	 */
-	public function checkRequirements($element)
+	public function checkRequirements($element): void
 	{
 	}
 
 
 	/**
 	 * Access to reflection.
-	 * @return ComponentReflection
 	 */
-	public static function getReflection()
+	public static function getReflection(): ComponentReflection
 	{
 		return new ComponentReflection(get_called_class());
 	}
@@ -378,14 +339,12 @@ trait ComponentControlTrait
 
 	/**
 	 * Loads state informations.
-	 * @param  array
-	 * @return void
 	 */
-	public function loadState(array $params)
+	public function loadState(array $params): void
 	{
 		$reflection = $this->getReflection();
 		foreach ($reflection->getPersistentParams() as $name => $meta) {
-			if (isset($params[$name])) { // NULLs are ignored
+			if (isset($params[$name])) { // nulls are ignored
 				$type = gettype($meta['def']);
 				if (!$reflection->convertType($params[$name], $type)) {
 					throw new Nette\Application\BadRequestException(sprintf(
@@ -407,68 +366,27 @@ trait ComponentControlTrait
 
 	/**
 	 * Saves state informations for next request.
-	 * @param  array
-	 * @param  ComponentReflection (internal, used by Presenter)
-	 * @return void
 	 */
-	public function saveState(array & $params, $reflection = NULL)
+	public function saveState(array &$params): void
 	{
-		$reflection = $reflection === NULL ? $this->getReflection() : $reflection;
-		foreach ($reflection->getPersistentParams() as $name => $meta) {
-
-			if (isset($params[$name])) {
-				// injected value
-
-			} elseif (array_key_exists($name, $params)) { // NULLs are skipped
-				continue;
-
-			} elseif ((!isset($meta['since']) || $this instanceof $meta['since']) && isset($this->$name)) {
-				$params[$name] = $this->$name; // object property value
-
-			} else {
-				continue; // ignored parameter
-			}
-
-			$type = gettype($meta['def']);
-			if (!ComponentReflection::convertType($params[$name], $type)) {
-				throw new InvalidLinkException(sprintf(
-					"Value passed to persistent parameter '%s' in %s must be %s, %s given.",
-					$name,
-					$this instanceof Presenter ? 'presenter ' . $this->getName() : "component '{$this->getUniqueId()}'",
-					$type === 'NULL' ? 'scalar' : $type,
-					is_object($params[$name]) ? get_class($params[$name]) : gettype($params[$name])
-				));
-			}
-
-			if ($params[$name] === $meta['def'] || ($meta['def'] === NULL && $params[$name] === '')) {
-				$params[$name] = NULL; // value transmit is unnecessary
-			}
-		}
+		$this->getReflection()->saveState($this, $params);
 	}
 
 
 	/**
 	 * Returns component param.
-	 * @param  string key
-	 * @param  mixed  default value
 	 * @return mixed
 	 */
-	public function getParameter($name, $default = NULL)
+	final public function getParameter(string $name, $default = null)
 	{
-		if (isset($this->params[$name])) {
-			return $this->params[$name];
-
-		} else {
-			return $default;
-		}
+		return $this->params[$name] ?? $default;
 	}
 
 
 	/**
 	 * Returns component parameters.
-	 * @return array
 	 */
-	public function getParameters()
+	final public function getParameters(): array
 	{
 		return $this->params;
 	}
@@ -476,10 +394,8 @@ trait ComponentControlTrait
 
 	/**
 	 * Returns a fully-qualified name that uniquely identifies the parameter.
-	 * @param  string
-	 * @return string
 	 */
-	public function getParameterId($name)
+	final public function getParameterId(string $name): string
 	{
 		$uid = $this->getUniqueId();
 		return $uid === '' ? $name : $uid . self::NAME_SEPARATOR . $name;
@@ -487,28 +403,10 @@ trait ComponentControlTrait
 
 
 	/** @deprecated */
-	function getParam($name = NULL, $default = NULL)
+	final public function getParam($name = null, $default = null)
 	{
-		//trigger_error(__METHOD__ . '() is deprecated; use getParameter() instead.', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . '() is deprecated; use getParameter() or getParameters() instead.', E_USER_DEPRECATED);
 		return func_num_args() ? $this->getParameter($name, $default) : $this->getParameters();
-	}
-
-
-	/**
-	 * Returns array of classes persistent parameters. They have public visibility and are non-static.
-	 * This default implementation detects persistent parameters by annotation @persistent.
-	 * @return array
-	 */
-	public static function getPersistentParams()
-	{
-		$rc = new \ReflectionClass(get_called_class());
-		$params = [];
-		foreach ($rc->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
-			if (!$rp->isStatic() && ComponentReflection::parseAnnotation($rp, 'persistent')) {
-				$params[] = $rp->getName();
-			}
-		}
-		return $params;
 	}
 
 
@@ -517,11 +415,9 @@ trait ComponentControlTrait
 
 	/**
 	 * Calls signal handler method.
-	 * @param  string
-	 * @return void
 	 * @throws BadSignalException if there is not handler method
 	 */
-	public function signalReceived($signal)
+	public function signalReceived(string $signal): void
 	{
 		if (!$this->tryCall($this->formatSignalMethod($signal), $this->params)) {
 			$class = get_class($this);
@@ -532,12 +428,10 @@ trait ComponentControlTrait
 
 	/**
 	 * Formats signal handler method name -> case sensitivity doesn't matter.
-	 * @param  string
-	 * @return string
 	 */
-	public static function formatSignalMethod($signal)
+	public static function formatSignalMethod(string $signal): string
 	{
-		return $signal == NULL ? NULL : 'handle' . $signal; // intentionally ==
+		return 'handle' . $signal;
 	}
 
 
@@ -546,14 +440,12 @@ trait ComponentControlTrait
 
 	/**
 	 * Generates URL to presenter, action or signal.
-	 * @param  string   destination in format "[//] [[[module:]presenter:]action | signal! | this] [#fragment]"
-	 * @param  array|mixed
-	 * @return string
+	 * @param  string   $destination in format "[//] [[[module:]presenter:]action | signal! | this] [#fragment]"
+	 * @param  array|mixed  $args
 	 * @throws InvalidLinkException
 	 */
-	public function link($destination, $args = [])
+	public function link(string $destination, $args = []): string
 	{
-		// edit start
 		if (!$this->_createRequestMethodReflection) {
 			$this->_createRequestMethodReflection = new \ReflectionMethod(Presenter::class, 'createRequest');
 			$this->_createRequestMethodReflection->setAccessible(true);
@@ -566,61 +458,7 @@ trait ComponentControlTrait
 			return $this->_createRequestMethodReflection->invoke($this->getPresenter(), $this, $destination, $args, 'link');
 
 		} catch (InvalidLinkException $e) {
-			$this->_handleInvalidLinkMethodReflection->invoke($e);
-		}
-		// edit end
-	}
-
-
-	/********************* interface \ArrayAccess ****************d*g**/
-
-
-	/**
-	 * Adds the component to the container.
-	 * @param  string  component name
-	 * @param  Nette\ComponentModel\IComponent
-	 * @return void
-	 */
-	public function offsetSet($name, $component)
-	{
-		$this->addComponent($component, $name);
-	}
-
-
-	/**
-	 * Returns component specified by name. Throws exception if component doesn't exist.
-	 * @param  string  component name
-	 * @return Nette\ComponentModel\IComponent
-	 * @throws Nette\InvalidArgumentException
-	 */
-	public function offsetGet($name)
-	{
-		return $this->getComponent($name, TRUE);
-	}
-
-
-	/**
-	 * Does component specified by name exists?
-	 * @param  string  component name
-	 * @return bool
-	 */
-	public function offsetExists($name)
-	{
-		return $this->getComponent($name, FALSE) !== NULL;
-	}
-
-
-	/**
-	 * Removes component from the container.
-	 * @param  string  component name
-	 * @return void
-	 */
-	public function offsetUnset($name)
-	{
-		$component = $this->getComponent($name, FALSE);
-		if ($component !== NULL) {
-			$this->removeComponent($component);
+			return $this->_handleInvalidLinkMethodReflection->invoke($this->getPresenter(), $e);
 		}
 	}
-
 }

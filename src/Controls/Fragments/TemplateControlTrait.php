@@ -96,6 +96,9 @@ trait TemplateControlTrait
 	/**** Application\UI\Control **************************************************************************************/
 
 
+	/** @var bool */
+	public $snippetMode;
+
 	/** @var ITemplateFactory */
 	private $templateFactory;
 
@@ -105,40 +108,28 @@ trait TemplateControlTrait
 	/** @var array */
 	private $invalidSnippets = [];
 
-	/** @var bool */
-	public $snippetMode;
-
 
 	/********************* template factory ****************d*g**/
 
 
-	public function setTemplateFactory(ITemplateFactory $templateFactory)
+	final public function setTemplateFactory(ITemplateFactory $templateFactory)
 	{
 		$this->templateFactory = $templateFactory;
+		return $this;
 	}
 
 
-	/**
-	 * @return ITemplate
-	 */
-	public function getTemplate()
+
+	final public function getTemplate(): ITemplate
 	{
-		if ($this->template === NULL) {
-			$value = $this->createTemplate();
-			if (!$value instanceof ITemplate && $value !== NULL) {
-				$class2 = get_class($value); $class = get_class($this);
-				throw new Nette\UnexpectedValueException("Object returned by $class::createTemplate() must be instance of Nette\\Application\\UI\\ITemplate, '$class2' given.");
-			}
-			$this->template = $value;
+		if ($this->template === null) {
+			$this->template = $this->createTemplate();
 		}
 		return $this->template;
 	}
 
 
-	/**
-	 * @return ITemplate
-	 */
-	protected function createTemplate()
+	protected function createTemplate(): ITemplate
 	{
 		$templateFactory = $this->templateFactory ?: $this->getPresenter()->getTemplateFactory();
 		// edit start
@@ -146,12 +137,24 @@ trait TemplateControlTrait
 		$template->control = $this;
 
 		if ($template instanceof Template) {
-			$presenter = $this->getPresenter(false);
+			$presenter = $this->hasPresenter() ? $this->getPresenter() : null;
 			$latte = $template->getLatte();
 			$latte->addProvider('formsStack', [$this]);
 			$latte->addProvider('uiControl', $this);
 			$latte->addProvider('uiPresenter', $presenter);
 			$latte->addProvider('snippetBridge', new SnippetBridge($this));
+			if ($presenter) {
+				$header = $presenter->getHttpResponse()->getHeader('Content-Security-Policy')
+					?: $presenter->getHttpResponse()->getHeader('Content-Security-Policy-Report-Only');
+			}
+			$nonce = $presenter && preg_match('#\s\'nonce-([\w+/]+=*)\'#', (string) $header, $m) ? $m[1] : null;
+			$latte->addProvider('uiNonce', $nonce);
+
+			if ($presenter instanceof Presenter && $presenter->hasFlashSession()) {
+				$id = $this->getParameterId('flash');
+				$template->flashes = (array) $presenter->getFlashSession()->$id;
+			}
+
 			$this->templatePrepareFilters($template);
 		}
 
@@ -169,11 +172,26 @@ trait TemplateControlTrait
 
 	/**
 	 * Descendant can override this method to customize template compile-time filters.
-	 * @param  ITemplate
-	 * @return void
 	 */
-	public function templatePrepareFilters($template)
+	public function templatePrepareFilters(ITemplate $template): void
 	{
+	}
+
+
+	/**
+	 * Saves the message to template, that can be displayed after redirect.
+	 */
+	public function flashMessage($message, string $type = 'info'): \stdClass
+	{
+		$id = $this->getParameterId('flash');
+		$messages = $this->getPresenter()->getFlashSession()->$id;
+		$messages[] = $flash = (object) [
+			'message' => $message,
+			'type' => $type,
+		];
+		$this->getTemplate()->flashes = $messages;
+		$this->getPresenter()->getFlashSession()->$id = $messages;
+		return $flash;
 	}
 
 
@@ -182,47 +200,29 @@ trait TemplateControlTrait
 
 	/**
 	 * Forces control or its snippet to repaint.
-	 * @return void
 	 */
-	public function redrawControl($snippet = NULL, $redraw = TRUE)
+	public function redrawControl(string $snippet = null, bool $redraw = true): void
 	{
 		if ($redraw) {
-			$this->invalidSnippets[$snippet === NULL ? "\0" : $snippet] = TRUE;
+			$this->invalidSnippets[$snippet === null ? "\0" : $snippet] = true;
 
-		} elseif ($snippet === NULL) {
+		} elseif ($snippet === null) {
 			$this->invalidSnippets = [];
 
 		} else {
-			$this->invalidSnippets[$snippet] = FALSE;
+			$this->invalidSnippets[$snippet] = false;
 		}
-	}
-
-
-	/** @deprecated */
-	function invalidateControl($snippet = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use $this->redrawControl($snippet) instead.', E_USER_DEPRECATED);
-		$this->redrawControl($snippet);
-	}
-
-	/** @deprecated */
-	function validateControl($snippet = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use $this->redrawControl($snippet, FALSE) instead.', E_USER_DEPRECATED);
-		$this->redrawControl($snippet, FALSE);
 	}
 
 
 	/**
 	 * Is required to repaint the control or its snippet?
-	 * @param  string  snippet name
-	 * @return bool
 	 */
-	public function isControlInvalid($snippet = NULL)
+	public function isControlInvalid(string $snippet = null): bool
 	{
-		if ($snippet === NULL) {
+		if ($snippet === null) {
 			if (count($this->invalidSnippets) > 0) {
-				return TRUE;
+				return true;
 
 			} else {
 				$queue = [$this];
@@ -230,8 +230,8 @@ trait TemplateControlTrait
 					foreach (array_shift($queue)->getComponents() as $component) {
 						if ($component instanceof IRenderable) {
 							if ($component->isControlInvalid()) {
-								// $this->invalidSnippets['__child'] = TRUE; // as cache
-								return TRUE;
+								// $this->invalidSnippets['__child'] = true; // as cache
+								return true;
 							}
 
 						} elseif ($component instanceof Nette\ComponentModel\IContainer) {
@@ -240,26 +240,21 @@ trait TemplateControlTrait
 					}
 				} while ($queue);
 
-				return FALSE;
+				return false;
 			}
 
-		} elseif (isset($this->invalidSnippets[$snippet])) {
-			return $this->invalidSnippets[$snippet];
 		} else {
-			return isset($this->invalidSnippets["\0"]);
+			return $this->invalidSnippets[$snippet] ?? isset($this->invalidSnippets["\0"]);
 		}
 	}
 
 
 	/**
 	 * Returns snippet HTML ID.
-	 * @param  string  snippet name
-	 * @return string
 	 */
-	public function getSnippetId($name = NULL)
+	public function getSnippetId(string $name): string
 	{
 		// HTML 4 ID & NAME: [A-Za-z][A-Za-z0-9:_.-]*
 		return 'snippet-' . $this->getUniqueId() . '-' . $name;
 	}
-
 }
