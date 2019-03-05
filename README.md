@@ -12,6 +12,7 @@ List of components:
 - **Tyheahead** - the best autocomplete for your forms
 - **BS3InputMacros** - input macros for Bootstrap 3 (adds some css classes)
 - **Bs3FormRenderer** - renders forms quicky in Bootstrap 3 design
+- **Bs4FormRenderer** - renders forms quicky in Bootstrap 4 design
 - **ComponentControl** - form's control which contains Component interface and my have own template, receive signals & render snippets;
 
 ### Installation
