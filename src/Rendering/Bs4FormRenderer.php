@@ -6,6 +6,7 @@ use Nette;
 use Nette\Forms\Controls;
 use Nette\Forms\Form;
 use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette\Utils\Html;
 
 /**
  * FormRenderer for Bootstrap 4 framework.
@@ -51,63 +52,63 @@ class Bs4FormRenderer extends DefaultFormRenderer
 	}
 
 
-	public function renderBegin()
+	public function renderBegin(): string
 	{
 		$this->controlsInit();
 		return parent::renderBegin();
 	}
 
 
-	public function renderEnd()
+	public function renderEnd(): string
 	{
 		$this->controlsInit();
 		return parent::renderEnd();
 	}
 
 
-	public function renderBody()
+	public function renderBody(): string
 	{
 		$this->controlsInit();
 		return parent::renderBody();
 	}
 
 
-	public function renderControls($parent)
+	public function renderControls($parent): string
 	{
 		$this->controlsInit();
 		return parent::renderControls($parent);
 	}
 
 
-	public function renderPair(Nette\Forms\IControl $control)
+	public function renderPair(Nette\Forms\IControl $control): string
 	{
 		$this->controlsInit();
 		return parent::renderPair($control);
 	}
 
 
-	public function renderPairMulti(array $controls)
+	public function renderPairMulti(array $controls): string
 	{
 		$this->controlsInit();
 		return parent::renderPairMulti($controls);
 	}
 
 
-	public function renderLabel(Nette\Forms\IControl $control)
+	public function renderLabel(Nette\Forms\IControl $control): Html
 	{
 		$this->controlsInit();
 		return parent::renderLabel($control);
 	}
 
 
-	public function renderControl(Nette\Forms\IControl $control)
+	public function renderControl(Nette\Forms\IControl $control): Html
 	{
 		$this->controlsInit();
 		return parent::renderControl($control);
 	}
 
 
-	private function controlsInit()
+	private function controlsInit(): void
 	{
 		if ($this->controlsInit) {
 			return;

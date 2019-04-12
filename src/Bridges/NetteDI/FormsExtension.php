@@ -10,6 +10,7 @@
 namespace Nextras\Forms\Bridges\NetteDI;
 
 use Nette\DI\CompilerExtension;
+use Nette\DI\Definitions\FactoryDefinition;
 use Nette\Forms\Container;
 use Nette\PhpGenerator\ClassType;
 use Nette\Utils\ObjectMixin;
@@ -22,8 +23,14 @@ class FormsExtension extends CompilerExtension
 	{
 		parent::beforeCompile();
 		$builder = $this->getContainerBuilder();
-		$builder->getDefinition('nette.latteFactory')
-			->addSetup('?->onCompile[] = function ($engine) { Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros::install($engine->getCompiler()); }', ['@self']);
+		$latteFactory = $builder->getDefinition('nette.latteFactory');
+
+		// nette v3 compatibility
+		if ($latteFactory instanceof FactoryDefinition) {
+			$latteFactory = $latteFactory->getResultDefinition();
+		}
+
+		$latteFactory->addSetup('?->onCompile[] = function ($engine) { Nextras\Forms\Bridges\Latte\Macros\BS3InputMacros::install($engine->getCompiler()); }', ['@self']);
 	}
 
 
@@ -36,14 +43,28 @@ class FormsExtension extends CompilerExtension
 
 	public static function registerControls()
 	{
-		ObjectMixin::setExtensionMethod(Container::class, 'addDatePicker', function (Container $container, $name, $label = null) {
-			return $container[$name] = new Controls\DatePicker($label);
-		});
-		ObjectMixin::setExtensionMethod(Container::class, 'addDateTimePicker', function (Container $container, $name, $label = null) {
-			return $container[$name] = new Controls\DateTimePicker($label);
-		});
-		ObjectMixin::setExtensionMethod(Container::class, 'addTypeahead', function(Container $container, $name, $label = null, $callback = null) {
-			return $container[$name] = new Controls\Typeahead($label, $callback);
-		});
+		$extensionsMethod = [
+			'addDatePicker' => function (Container $container, $name, $label = null) {
+				return $container[$name] = new Controls\DatePicker($label);
+			},
+			'addDateTimePicker' => function (Container $container, $name, $label = null) {
+				return $container[$name] = new Controls\DateTimePicker($label);
+			},
+			'addTypeahead' => function(Container $container, $name, $label = null, $callback = null) {
+				return $container[$name] = new Controls\Typeahead($label, $callback);
+			},
+		];
+
+		if (method_exists(Container::class, 'extensionMethod')) {
+			// Nette v3 compatibility
+			foreach ($extensionsMethod as $name => $callback) {
+				Container::extensionMethod($name, $callback);
+			}
+		}
+		else {
+			foreach ($extensionsMethod as $name => $callback) {
+				ObjectMixin::setExtensionMethod(Container::class, $name, $callback);
+			}
+		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Nextras\Forms\Controls;
 
 use Nette;
 use Nette\Forms;
+use Nette\Utils\Html;
 use Nextras\Forms\Controls\Fragments\ComponentControlTrait;
 
 
@@ -34,7 +35,7 @@ class Typeahead extends Forms\Controls\TextInput implements Nette\Application\UI
 	}
 
 
-	public function getControl()
+	public function getControl() : Html
 	{
 		$control = parent::getControl();
 		$control->addClass('typeahead');
