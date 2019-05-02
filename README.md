@@ -9,7 +9,7 @@ Nextras Forms
 List of components:
 - **DatePicker** - date picker, represented by DateTime object
 - **DateTimePicker** - date & time picker, represented by DateTime object
-- **Tyheahead** - the best autocomplete for your forms
+- **Typeahead** - the best autocomplete for your forms
 - **BS3InputMacros** - input macros for Bootstrap 3 (adds some css classes)
 - **Bs3FormRenderer** - renders forms quicky in Bootstrap 3 design
 - **Bs4FormRenderer** - renders forms quicky in Bootstrap 4 design
