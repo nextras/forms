@@ -1,6 +1,16 @@
 Nextras Forms
 =============
 
+
+====================
+
+**This repository is deprecated.<br>
+Current releases work for Nette 2.2.<br>
+For Nette 3.0+ see new repositories [nextras/form-components](https://github.com/nextras/form-components) and [nextras/forms-rendering](https://github.com/nextras/forms-rendering).**
+
+====================
+
+
 [![Build Status](https://travis-ci.org/nextras/forms.svg?branch=master)](https://travis-ci.org/nextras/forms)
 [![Downloads this Month](https://img.shields.io/packagist/dm/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
 [![Stable version](http://img.shields.io/packagist/v/nextras/forms.svg?style=flat)](https://packagist.org/packages/nextras/forms)
