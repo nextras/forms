@@ -12,7 +12,6 @@ namespace Nextras\Forms\Bridges\NetteDI;
 use Nette\DI\CompilerExtension;
 use Nette\Forms\Container;
 use Nette\PhpGenerator\ClassType;
-use Nette\Utils\ObjectMixin;
 use Nextras\Forms\Controls;
 
 
@@ -36,13 +35,13 @@ class FormsExtension extends CompilerExtension
 
 	public static function registerControls()
 	{
-		ObjectMixin::setExtensionMethod(Container::class, 'addDatePicker', function (Container $container, $name, $label = null) {
+		Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = null) {
 			return $container[$name] = new Controls\DatePicker($label);
 		});
-		ObjectMixin::setExtensionMethod(Container::class, 'addDateTimePicker', function (Container $container, $name, $label = null) {
+		Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = null) {
 			return $container[$name] = new Controls\DateTimePicker($label);
 		});
-		ObjectMixin::setExtensionMethod(Container::class, 'addTypeahead', function(Container $container, $name, $label = null, $callback = null) {
+		Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = null, $callback = null) {
 			return $container[$name] = new Controls\Typeahead($label, $callback);
 		});
 	}
